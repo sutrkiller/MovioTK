@@ -5,7 +5,8 @@ import android.os.Build;
 import android.os.StrictMode;
 
 /**
- * Created by Tobias on 9/20/2016.
+ * Launching class of application
+ * @author Tobias Kamenicky <tobias.kamenicky@gmail.com>
  */
 
 public class App extends Application {

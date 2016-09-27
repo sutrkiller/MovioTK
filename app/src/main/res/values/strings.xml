@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MovioTK</string>
+    <string name="switch_theme">Switch Theme</string>
 </resources>

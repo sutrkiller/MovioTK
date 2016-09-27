@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!--<item name="colorPrimaryLight">@color/colorPrimaryLight</item>-->
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="textColorPrimary">@color/textColorPrimary</item>-->
+        <!--<item name="textColorSecondary">textColorSecondary</item>-->
+    </style>
+
+    <style name="Theme.ThemeSecondary" >
+        <item name="colorPrimary">@color/colorPrimarySec</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkSec</item>
+        <item name="colorAccent">@color/colorAccentSec</item>
+    </style>
+</resources>
