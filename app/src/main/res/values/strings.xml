@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">MovioTK</string>
     <string name="switch_theme">Switch Theme</string>
+    <string name="detail">Detail</string>
+    <string name="movie_backdrop_image">Movie backdrop image</string>
+    <string name="movie_cover_image">Movie cover image</string>
+    <string name="search">Search</string>
 </resources>

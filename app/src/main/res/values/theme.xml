@@ -14,4 +14,15 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDarkSec</item>
         <item name="colorAccent">@color/colorAccentSec</item>
     </style>
+
+    <style name="Theme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.ThemeSecondary.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>
