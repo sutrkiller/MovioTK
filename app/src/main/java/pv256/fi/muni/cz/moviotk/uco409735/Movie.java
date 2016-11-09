@@ -3,6 +3,8 @@ package pv256.fi.muni.cz.moviotk.uco409735;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Model for data downloaded from API.
  * @author Tobias <tobias.kamenicky@gmail.com>
@@ -10,38 +12,44 @@ import android.os.Parcelable;
 
 public class Movie implements Parcelable {
 
+    @SerializedName("id")
     private long mId;
-    private long mReleaseDate;
+    @SerializedName("release_date")
+    private String mReleaseDate;
+    @SerializedName("poster_path")
     private String mCoverPath;
+    @SerializedName("title")
     private String mTitle;
+    @SerializedName("backdrop_path")
     private String mBackdropPath;
+    @SerializedName("vote_average")
     private float mPopularity;
 
     //TODO: temporary until url is given
-    private int mBackdropId;
-    private int mCoverId;
+    //private int mBackdropId;
+    //private int mCoverId;
 
-    public Movie(long id, String backdrop, String coverPath, float popularity, long releaseDate, String title, int backdropId, int coverId) {
+    public Movie(long id, String backdrop, String coverPath, float popularity, String releaseDate, String title) {
         mId = id;
         mBackdropPath = backdrop;
         mCoverPath = coverPath;
         mPopularity = popularity;
         mReleaseDate = releaseDate;
         mTitle = title;
-        mBackdropId = backdropId;
-        mCoverId = coverId;
+        //mBackdropId = backdropId;
+        //mCoverId = coverId;
     }
 
     public Movie(Parcel in) {
         mId = in.readLong();
-        mReleaseDate = in.readLong();
+        mReleaseDate = in.readString();
         mCoverPath = in.readString();
         mTitle = in.readString();
         mBackdropPath = in.readString();
         mPopularity = in.readFloat();
 
-        mBackdropId = in.readInt();
-        mCoverId = in.readInt();
+        //mBackdropId = in.readInt();
+        //mCoverId = in.readInt();
     }
 
     public String getBackdropPath() {
@@ -68,11 +76,11 @@ public class Movie implements Parcelable {
         mPopularity = popularity;
     }
 
-    public long getReleaseDate() {
+    public String getReleaseDate() {
         return mReleaseDate;
     }
 
-    public void setReleaseDate(long releaseDate) {
+    public void setReleaseDate(String releaseDate) {
         mReleaseDate = releaseDate;
     }
 
@@ -92,21 +100,21 @@ public class Movie implements Parcelable {
         mId = id;
     }
 
-    public int getBackdropId() {
-        return mBackdropId;
-    }
-
-    public void setBackdropId(int backdropId) {
-        mBackdropId = backdropId;
-    }
-
-    public int getCoverId() {
-        return mCoverId;
-    }
-
-    public void setCoverId(int coverId) {
-        mCoverId = coverId;
-    }
+//    public int getBackdropId() {
+//        return mBackdropId;
+//    }
+//
+//    public void setBackdropId(int backdropId) {
+//        mBackdropId = backdropId;
+//    }
+//
+//    public int getCoverId() {
+//        return mCoverId;
+//    }
+//
+//    public void setCoverId(int coverId) {
+//        mCoverId = coverId;
+//    }
 
     @Override
     public int describeContents() {
@@ -116,14 +124,14 @@ public class Movie implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(mId);
-        dest.writeLong(mReleaseDate);
+        dest.writeString(mReleaseDate);
         dest.writeString(mCoverPath);
         dest.writeString(mTitle);
         dest.writeString(mBackdropPath);
         dest.writeFloat(mPopularity);
 
-        dest.writeInt(mBackdropId);
-        dest.writeInt(mCoverId);
+//        dest.writeInt(mBackdropId);
+//        dest.writeInt(mCoverId);
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {

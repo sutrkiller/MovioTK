@@ -6,39 +6,77 @@
                 android:background="?attr/colorPrimary"
                 android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/detail_backdrop_image"
+    <RelativeLayout
+        android:id="@+id/detail_backdrop_wrapper"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_centerHorizontal="true"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/movie_backdrop_image"
-        android:scaleType="centerCrop"
-        android:tint="#bf212121"/>
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/detail_backdrop_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/movie_backdrop_image"
+            android:scaleType="centerCrop"
+            android:tint="#bf212121"
+            android:background="@color/colorWhite"/>
+
+        <ProgressBar
+            android:id="@+id/detail_backdrop_loader"
+            style="@android:style/Widget.ProgressBar.Small"
+            android:layout_width="match_parent"
 
 
-    <ImageView
-        android:id="@+id/detail_cover_image"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/detail_cover_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="140dp"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/detail_backdrop_image"
+        android:layout_below="@id/detail_backdrop_wrapper"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="-32dp"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/movie_cover_image"
-        android:scaleType="fitCenter"
-        android:src="@drawable/captain_america_cover"/>
+        android:layout_marginTop="-32dp">
+
+        <ImageView
+            android:id="@+id/detail_cover_image"
+            android:layout_width="wrap_content"
+            android:layout_height="140dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/movie_cover_image"
+            android:scaleType="fitCenter"
+            />
+
+        <ProgressBar
+            android:id="@+id/detail_cover_loader"
+            style="@android:style/Widget.ProgressBar.Small"
+            android:layout_width="wrap_content"
+
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:indeterminate="true"
+            android:visibility="invisible"
+            />
+
+    </RelativeLayout>
+
 
     <com.lb.auto_fit_textview.AutoResizeTextView
         android:id="@+id/detail_movie_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/detail_backdrop_image"
+        android:layout_below="@id/detail_backdrop_wrapper"
         android:layout_marginTop="8dp"
-        android:layout_toEndOf="@id/detail_cover_image"
+        android:layout_toEndOf="@id/detail_cover_wrapper"
         android:ellipsize="end"
         android:maxLines="3"
         android:maxWidth="180dp"
@@ -68,9 +106,9 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="-4dp"
-        android:gravity="center_vertical"
-        android:drawableStart="@drawable/star"
         android:drawablePadding="8dp"
+        android:drawableStart="@drawable/star"
+        android:gravity="center_vertical"
         android:textColor="@color/colorWhite"
         android:textSize="20sp"
         />
@@ -79,8 +117,8 @@
         android:id="@+id/fab_detail"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_alignBottom="@id/detail_backdrop_image"
-        android:layout_alignEnd="@id/detail_backdrop_image"
+        android:layout_alignBottom="@id/detail_backdrop_wrapper"
+        android:layout_alignEnd="@id/detail_backdrop_wrapper"
         android:layout_marginBottom="-28dp"
         android:layout_marginEnd="16dp"
         app:srcCompat="@drawable/ic_add_black_24dp"/>
