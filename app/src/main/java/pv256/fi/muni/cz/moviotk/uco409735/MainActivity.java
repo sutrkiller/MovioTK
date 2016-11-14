@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -56,6 +57,30 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
 
         prepareNavigationDrawer();
         restoreSelectedGenres();
+        reloadMovies();
+        //View count = findViewById(R.id.fragment_main);
+    }
+
+    private void reloadMovies() {
+        MainFragment fr = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
+        if (fr == null) return;
+        View view = fr.getView();
+        fr.loadMovies(view,getSelectedGenres());
+    }
+
+    //TODO: maybe dynamically populate menu?
+        private String[] mGenres = {"28","12","16","35","80","99","18","10751","14","36","27","10402","9648","10749","878","10770","53","10752","37"};
+    private String getSelectedGenres() {
+        NavigationView view = (NavigationView) findViewById(R.id.nav_view);
+        if (view == null) return "";
+        Menu menu = view.getMenu().findItem(R.id.nav_genres).getSubMenu();
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < menu.size(); ++i) {
+            if (!menu.getItem(i).isChecked()) continue;
+            result.append(mGenres[i]).append(",");
+        }
+        if (result.length()>0) result.deleteCharAt(result.length() - 1);
+        return result.toString();
     }
 
     private void setUpContentView(Bundle savedInstanceState) {
@@ -108,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         for (int i = 0; i < menu.size(); ++i) {
             result.append(menu.getItem(i).isChecked() ? "1" : "0").append(";");
         }
-        result.deleteCharAt(result.length() - 1);
+        if (result.length()>0) result.deleteCharAt(result.length() - 1);
         mPrefs.edit().putString(SELECTED_GENRES, result.toString()).apply();
     }
 
@@ -120,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
                 super.onDrawerClosed(drawerView);
                 invalidateOptionsMenu();
                 syncState();
+                reloadMovies();
             }
 
             @Override

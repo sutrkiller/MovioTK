@@ -1,15 +1,18 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ViewStubCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -82,7 +85,7 @@ public class MainFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_main, container,false);
 
-       loadMovies(view);
+       //loadMovies(view);
 
         if(savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
@@ -187,18 +190,19 @@ public class MainFragment extends Fragment {
     }
 
     private GetMoviesTask mAsyncTask;
-    private void loadMovies(View view) {
-        if (!MoviesStorage.getInstance().isMapEmpty()) {
+    public void loadMovies(View view, String genres) {
+        if (!MoviesStorage.getInstance().isMapEmpty() && genres.equals(MoviesStorage.getInstance().getSelectedGenres())) {
 
                 fillRecyclerView(view, MoviesStorage.getInstance().getMovieMap());
         } else {
             if (mAsyncTask != null) {
                 mAsyncTask.cancel(true);
             }
-            mAsyncTask = new GetMoviesTask(this);
+            mAsyncTask = new GetMoviesTask(this,genres);
             mAsyncTask.execute();
         }
     }
+
 
     @Override
     public void onStop() {
@@ -220,10 +224,12 @@ public class MainFragment extends Fragment {
         private Gson mGson = new Gson();
         private final WeakReference<MainFragment> mFragmentWeakReference;
         private final ApiClient mClient;
+        private final String mGenres;
 
-        public GetMoviesTask(MainFragment mainFragment) {
+        public GetMoviesTask(MainFragment mainFragment, String genres) {
             mFragmentWeakReference = new WeakReference<MainFragment>(mainFragment);
             mClient = ApiClient.getInstance();
+            mGenres = genres;
         }
 
         private boolean downloadUpcomingMovies() {
@@ -232,7 +238,9 @@ public class MainFragment extends Fragment {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DATE, 7);
             String dateTo = format.format(cal.getTime());
-            Response response = mClient.doGet(URL + "api_key=" + API_KEY + "&language=en-US&sort_by=popularity.desc&page=1&primary_release_date.gte=" + dateNow + "&primary_release_date.lte=" + dateTo);
+            String address = URL + "api_key=" + API_KEY + "&language=en-US&sort_by=popularity.desc&page=1&primary_release_date.gte=" + dateNow + "&primary_release_date.lte=" + dateTo;
+            address += mGenres.isEmpty() ? "" : "&with_genres=" + mGenres;
+            Response response = mClient.doGet(address);
 
             if (response != null) {
                 if (response.isSuccessful()) {
@@ -255,7 +263,9 @@ public class MainFragment extends Fragment {
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.MONTH, -1);
             String dateFrom = format.format(cal.getTime());
-            Response response = mClient.doGet(URL + "api_key=" + API_KEY + "&language=en-US&sort_by=popularity.desc&page=1&primary_release_date.gte=" + dateFrom + "&primary_release_date.lte=" + dateNow);
+            String address = URL + "api_key=" + API_KEY + "&language=en-US&sort_by=popularity.desc&page=1&primary_release_date.gte=" + dateFrom + "&primary_release_date.lte=" + dateNow;
+            address += mGenres.isEmpty() ? "" : "&with_genres=" + mGenres;
+            Response response = mClient.doGet(address);
 
             if (response != null) {
                 if (response.isSuccessful()) {
@@ -274,6 +284,8 @@ public class MainFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            MoviesStorage.getInstance().clearMap();
+            MoviesStorage.getInstance().setSelectedGenres("");
             boolean r1 = downloadUpcomingMovies();
             boolean r2 = downloadNowPlayingMovies();
             if (r1 || r2) {
@@ -294,6 +306,7 @@ public class MainFragment extends Fragment {
             }
             View view = fragment.getView();
             if (view != null) {
+                MoviesStorage.getInstance().setSelectedGenres(mGenres);
                 fragment.fillRecyclerView(view, MoviesStorage.getInstance().getMovieMap());
             }
         }

@@ -14,6 +14,7 @@ import java.util.TimeZone;
 public class MovieData {
     private static MovieData sInstance;
     private Map<String,ArrayList<Movie>> mMovieMap = new HashMap<>(); //TODO: ArrayMap from API 17
+    private String selectedGenres = "";
 
     private MovieData() {initMoviesList();}
 
