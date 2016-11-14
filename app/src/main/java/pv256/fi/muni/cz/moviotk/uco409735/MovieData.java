@@ -1,7 +1,11 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
+import android.util.ArrayMap;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -11,7 +15,7 @@ import java.util.TimeZone;
 
 public class MovieData {
     private static MovieData sInstance;
-    private ArrayList<Movie> mMovieList = new ArrayList<>();
+    private Map<String,ArrayList<Movie>> mMovieMap = new HashMap<>(); //TODO: ArrayMap from API 17
 
     private MovieData() {initMoviesList();}
 
@@ -24,9 +28,11 @@ public class MovieData {
 
     private void initMoviesList() {
         for(int i=0;i<4;++i) {
-            mMovieList.add(new Movie(i*3 +1,"","",4.6F,getCurrentTime(),"Captain America: Civil War ", R.drawable.captain_america_backdrop, R.drawable.captain_america_cover));
-            mMovieList.add(new Movie(i*3+2,"","",4.9F,getCurrentTime(),"Mechanic: Resurrection ", R.drawable.mechanic_backdrop, R.drawable.mechanic_cover));
-            mMovieList.add(new Movie(i*3+3,"","",4.2F,getCurrentTime(),"X-men: Apocalypse", R.drawable.xmen_backdrop, R.drawable.xmen_cover));
+            ArrayList<Movie> movieList = new ArrayList<>();
+            movieList.add(new Movie(i*3 +1,"","",4.6F,getCurrentTime(),"Captain America: Civil War ", R.drawable.captain_america_backdrop, R.drawable.captain_america_cover));
+            movieList.add(new Movie(i*3+2,"","",4.9F,getCurrentTime(),"Mechanic: Resurrection ", R.drawable.mechanic_backdrop, R.drawable.mechanic_cover));
+            movieList.add(new Movie(i*3+3,"","",4.2F,getCurrentTime(),"X-men: Apocalypse", R.drawable.xmen_backdrop, R.drawable.xmen_cover));
+            mMovieMap.put("Category "+(i+1),movieList);
         }
     }
 
@@ -34,8 +40,8 @@ public class MovieData {
         return Calendar.getInstance(TimeZone.getTimeZone("GMT+1:00")).getTime().getTime();
     }
 
-    public ArrayList<Movie> getMovieList() {return mMovieList;}
+    public Map<String,ArrayList<Movie>> getMovieMap() {return mMovieMap;}
 
-    public void setMovieList(ArrayList<Movie> movieList) {mMovieList = movieList;}
+    public void setMovieList(Map<String,ArrayList<Movie>> movieList) {mMovieMap = movieList;}
 
 }

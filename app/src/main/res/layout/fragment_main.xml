@@ -14,4 +14,18 @@
         android:layout_height="match_parent"
         android:name=".MainFragment"
         />
+    
+    <android.support.v7.widget.ViewStubCompat
+        android:id="@+id/recyclerView_movies_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:inflatedId="@+id/recyclerView_movies_empty_infl"
+        android:layout="@layout/recyclerview_empty"
+        />
+
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/testButton"/>-->
 </FrameLayout>

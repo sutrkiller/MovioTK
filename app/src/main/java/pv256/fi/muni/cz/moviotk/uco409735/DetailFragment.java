@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.text.TextUtilsCompat;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -26,7 +27,7 @@ import java.util.Calendar;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
- * Movie detail is part of MovieDetailActivity on screens < 900px, otherwise part of MainActivity.
+ * Movie detail is part of MainLayout on screens < 900px, otherwise single fragment.
  * @author Tobias <tobias.kamenicky@gmail.com>
  */
 
@@ -83,17 +84,11 @@ public class DetailFragment extends Fragment {
             textDate.setSpan(new RelativeSizeSpan(0.7f),0,textDate.length(),0);
             CharSequence titleFinal =  TextUtils.concat(textTitle,textDate);
 
-
             movieTitle.setText(titleFinal);
             setImage(backdropImg,mMovie.getBackdropId());
             setImage(coverImg,mMovie.getCoverId());
 
-            Drawable star;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                star = mContext.getDrawable(R.drawable.star);
-            } else {
-                star = mContext.getResources().getDrawable(R.drawable.star);
-            }
+            Drawable star = ResourcesCompat.getDrawable(mContext.getResources(),R.drawable.star,mContext.getTheme());
 
             Resources r = getResources();
             int pxBound = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, r.getDisplayMetrics());
@@ -101,8 +96,6 @@ public class DetailFragment extends Fragment {
             movieRating.setCompoundDrawables(star,null,null,null);
 
             movieRating.setText(String.valueOf(mMovie.getPopularity()));
-
-
         }
 
         return view;
@@ -110,10 +103,11 @@ public class DetailFragment extends Fragment {
 
     private void setImage(ImageView imageView, int drawableId) {
         //TODO: internet
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageView.setImageDrawable(mContext.getDrawable(drawableId));
-        } else {
-            imageView.setImageDrawable(mContext.getResources().getDrawable(drawableId));
-        }
+        imageView.setImageDrawable(ResourcesCompat.getDrawable(mContext.getResources(), drawableId,mContext.getTheme()));
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            imageView.setImageDrawable(mContext.getDrawable(drawableId));
+//        } else {
+//            imageView.setImageDrawable(mContext.getResources().getDrawable(drawableId));
+//        }
     }
 }
