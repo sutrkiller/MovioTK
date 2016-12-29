@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.Context;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -52,6 +53,7 @@ public class MovieDownloadService extends IntentService {
         super(name);
         mGson = new Gson();
     }
+
     /**
      * Starts this service to perform action  with the given parameters. If
      * the service is already performing a task this action will be queued.
@@ -118,7 +120,7 @@ public class MovieDownloadService extends IntentService {
         return format.format(cal.getTime());
     }
 
-    private boolean doCall(Call<Movie[]> moviesCall,String category) {
+    private boolean doCall(Call<Movie[]> moviesCall, String category) {
         try {
             Response response = moviesCall.execute();
 
@@ -130,8 +132,7 @@ public class MovieDownloadService extends IntentService {
                 } else {
                     notifyError();
                 }
-            }
-             else {
+            } else {
                 notifyError();
             }
         } catch (IOException ex) {
@@ -148,36 +149,42 @@ public class MovieDownloadService extends IntentService {
     private void notifyError() {
         MoviesStorage.getInstance().clearMap();
         MoviesStorage.getInstance().setSelectedGenres("-1");
-        Notification notify = new NotificationCompat.Builder(this)
+        Notification notify = getNotificationBuilderWithIcon()
                 .setContentTitle(getString(R.string.notification_error_title))
                 .setContentText(getString(R.string.notification_error_text))
-                .setSmallIcon(R.drawable.notification_icon)
                 .build();
         showNotification(notify);
     }
 
     private void notifyDownloading() {
-        Notification notification = new NotificationCompat.Builder(this)
+        Notification notification = getNotificationBuilderWithIcon()
                 .setContentTitle(getString(R.string.notification_downloading_title))
-                .setSmallIcon(R.drawable.notification_icon)
                 .setOngoing(true)
-                .setProgress(100,0,true)
+                .setProgress(100, 0, true)
                 .build();
         showNotification(notification);
     }
 
     private void notifyDownloadFinished() {
-        Notification notification = new NotificationCompat.Builder(this)
+        Notification notification = getNotificationBuilderWithIcon()
                 .setContentTitle(getString(R.string.notification_downloaded_title))
                 .setContentText(getString(R.string.notification_downloaded_text))
-                .setSmallIcon(R.drawable.notification_icon)
                 .build();
         showNotification(notification);
     }
 
     private void showNotification(Notification n) {
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(0,n);
+        manager.notify(0, n);
+    }
+
+    private NotificationCompat.Builder getNotificationBuilderWithIcon() {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_stat_notification_icon);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            builder.setColor(Color.argb(255, 148, 24, 224));
+        }
+        return builder;
     }
 
     private void initRetrofit() {
@@ -196,8 +203,8 @@ public class MovieDownloadService extends IntentService {
                         };
                     }
                 })
-        .addConverterFactory(GsonConverterFactory.create())
-        .build();
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
         movieDbApi = mRetrofit.create(MovieDbApi.class);
     }
