@@ -5,7 +5,9 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -24,6 +26,7 @@ import com.squareup.picasso.Picasso;
 
 import pv256.fi.muni.cz.moviotk.uco409735.Adapters.MovieRecyclerViewAdapter;
 import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDbApi;
+import pv256.fi.muni.cz.moviotk.uco409735.Db.MovieManager;
 
 /**
  * Movie detail is part of MainLayout on screens < 900px, otherwise single fragment.
@@ -37,6 +40,7 @@ public class DetailFragment extends Fragment {
 
     private Context mContext;
     private Movie mMovie;
+    private MovieManager mManager;
 
     public static DetailFragment newInstance(Movie movie) {
         DetailFragment fragment = new DetailFragment();
@@ -54,6 +58,7 @@ public class DetailFragment extends Fragment {
         if(args != null) {
             mMovie = args.getParcelable(ARGS_MOVIE);
         }
+        mManager = new MovieManager(getActivity());
     }
 
     @Nullable
@@ -72,15 +77,28 @@ public class DetailFragment extends Fragment {
         ProgressBar coverLoader = (ProgressBar) view.findViewById(R.id.detail_cover_loader);
 
         ImageView coverImg = (ImageView) view.findViewById(R.id.detail_cover_image);
+        final FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_detail);
 
         if(mMovie != null) {
-            titleTv.setText(mMovie.getTitle());
-            //titleLowTv.setText(mMovie.getCoverPath());
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mMovie.isFromDb()) {
+                        Log.d(DetailFragment.class.getName(),"Remove from db clicked");
+                        mManager.remove(mMovie.getId());
+                    } else {
+                        Log.d(DetailFragment.class.getName(),"Add to db clicked");
+                        mManager.add(mMovie);
+                    }
+                    fab.setImageDrawable(ContextCompat.getDrawable(getActivity(),mMovie.isFromDb() ? R.drawable.ic_add_black_24dp : R.drawable.ic_grade_black_24dp));
+                    mMovie.setFromDb(!mMovie.isFromDb());
+                }
+            });
 
-            //Title + date
-//            Calendar cal = Calendar.getInstance();
-//            cal.setTimeInMillis(mMovie.getReleaseDate());
-            String year = mMovie.getReleaseDate();// String.valueOf(cal.get(Calendar.YEAR));
+
+            titleTv.setText(mMovie.getTitle());
+
+            String year = mMovie.getReleaseDate();
             SpannableString textTitle = new SpannableString(mMovie.getTitle());
             SpannableString textDate = new SpannableString(" ("+year+")");
             textDate.setSpan(new RelativeSizeSpan(0.7f),0,textDate.length(),0);
@@ -104,9 +122,6 @@ public class DetailFragment extends Fragment {
     }
 
     private void setImage(final ImageView imageView, final ProgressBar loader,String path, int placeHolderId) {
-        //TODO: internet
-        //imageView.setImageDrawable(ResourcesCompat.getDrawable(mContext.getResources(), drawableId,mContext.getTheme()));
-
         loader.setVisibility(View.VISIBLE);
         imageView.setVisibility(View.INVISIBLE);
         Picasso.with(mContext).setIndicatorsEnabled(true);
@@ -131,11 +146,5 @@ public class DetailFragment extends Fragment {
                         imageView.setVisibility(View.VISIBLE);
                     }
                 });
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            imageView.setImageDrawable(mContext.getDrawable(drawableId));
-//        } else {
-//            imageView.setImageDrawable(mContext.getResources().getDrawable(drawableId));
-//        }
     }
 }

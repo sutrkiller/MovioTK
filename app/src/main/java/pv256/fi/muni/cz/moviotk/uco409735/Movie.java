@@ -24,20 +24,20 @@ public class Movie implements Parcelable {
     private String mBackdropPath;
     @SerializedName("vote_average")
     private float mPopularity;
+    private transient boolean mFromDb;
 
     //TODO: temporary until url is given
     //private int mBackdropId;
     //private int mCoverId;
 
-    public Movie(long id, String backdrop, String coverPath, float popularity, String releaseDate, String title) {
+    public Movie(long id, String title, float popularity, String coverPath, String backdrop, String releaseDate, boolean fromDb ) {
         mId = id;
         mBackdropPath = backdrop;
         mCoverPath = coverPath;
         mPopularity = popularity;
         mReleaseDate = releaseDate;
         mTitle = title;
-        //mBackdropId = backdropId;
-        //mCoverId = coverId;
+        mFromDb = fromDb;
     }
 
     public Movie(Parcel in) {
@@ -47,9 +47,7 @@ public class Movie implements Parcelable {
         mTitle = in.readString();
         mBackdropPath = in.readString();
         mPopularity = in.readFloat();
-
-        //mBackdropId = in.readInt();
-        //mCoverId = in.readInt();
+        mFromDb = in.readInt() > 0;
     }
 
     public String getBackdropPath() {
@@ -100,22 +98,6 @@ public class Movie implements Parcelable {
         mId = id;
     }
 
-//    public int getBackdropId() {
-//        return mBackdropId;
-//    }
-//
-//    public void setBackdropId(int backdropId) {
-//        mBackdropId = backdropId;
-//    }
-//
-//    public int getCoverId() {
-//        return mCoverId;
-//    }
-//
-//    public void setCoverId(int coverId) {
-//        mCoverId = coverId;
-//    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -129,9 +111,7 @@ public class Movie implements Parcelable {
         dest.writeString(mTitle);
         dest.writeString(mBackdropPath);
         dest.writeFloat(mPopularity);
-
-//        dest.writeInt(mBackdropId);
-//        dest.writeInt(mCoverId);
+        dest.writeInt(mFromDb ? 1 : 0);
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -147,4 +127,11 @@ public class Movie implements Parcelable {
     };
 
 
+    public boolean isFromDb() {
+        return mFromDb;
+    }
+
+    public void setFromDb(boolean mFromDb) {
+        this.mFromDb = mFromDb;
+    }
 }
