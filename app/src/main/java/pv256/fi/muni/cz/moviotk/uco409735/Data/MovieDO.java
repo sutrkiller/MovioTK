@@ -4,8 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 import pv256.fi.muni.cz.moviotk.uco409735.Movie;
 
+
 /**
- * Created by Tobias on 11/8/2016.
+ * @author Tobias Kamenicky <tobias.kamenicky@gmail.com>
+ * @date 11/8/2016.
  */
 
 public class MovieDO {

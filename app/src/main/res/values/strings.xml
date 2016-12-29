@@ -27,4 +27,9 @@
     <string name="thriller">Thriller</string>
     <string name="war">War</string>
     <string name="western">Western</string>
+    <string name="notification_error_title">Error</string>
+    <string name="notification_error_text">An error occurred while downloading movies data.</string>
+    <string name="notification_downloading_title">Downloading movies data</string>
+    <string name="notification_downloaded_title">Downloading finished</string>
+    <string name="notification_downloaded_text">Movies data downloaded successfully</string>
 </resources>

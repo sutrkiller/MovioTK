@@ -1,20 +1,13 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.text.TextUtilsCompat;
-import android.support.v7.graphics.Palette;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
 import android.util.Log;
@@ -29,13 +22,8 @@ import android.widget.TextView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import pv256.fi.muni.cz.moviotk.uco409735.Adapters.MovieRecyclerViewAdapter;
-
-import static android.content.Context.MODE_PRIVATE;
+import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDbApi;
 
 /**
  * Movie detail is part of MainLayout on screens < 900px, otherwise single fragment.
@@ -123,7 +111,7 @@ public class DetailFragment extends Fragment {
         imageView.setVisibility(View.INVISIBLE);
         Picasso.with(mContext).setIndicatorsEnabled(true);
         Picasso.with(mContext).setLoggingEnabled(true);
-        Picasso.with(mContext).load("https://image.tmdb.org/t/p/original"+path)
+        Picasso.with(mContext).load(MovieDbApi.IMAGES_URL+path)
                 .placeholder(placeHolderId)
                 .error(R.drawable.image_not_available)
                 .fit()

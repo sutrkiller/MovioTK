@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         fr.loadMovies(view,getSelectedGenres());
     }
 
-    //TODO: maybe dynamically populate menu?
+    //TODO: maybe dynamically populate menu somehow?
         private String[] mGenres = {"28","12","16","35","80","99","18","10751","14","36","27","10402","9648","10749","878","10770","53","10752","37"};
     private String getSelectedGenres() {
         NavigationView view = (NavigationView) findViewById(R.id.nav_view);
