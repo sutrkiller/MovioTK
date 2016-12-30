@@ -15,6 +15,8 @@ import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -59,6 +61,7 @@ public class DetailFragment extends Fragment {
             mMovie = args.getParcelable(ARGS_MOVIE);
         }
         mManager = new MovieManager(getActivity());
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -83,18 +86,19 @@ public class DetailFragment extends Fragment {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (mMovie.isFromDb()) {
+                    mMovie.setFromDb(!mMovie.isFromDb());
+                    if (!mMovie.isFromDb()) {
                         Log.d(DetailFragment.class.getName(),"Remove from db clicked");
                         mManager.remove(mMovie.getId());
                     } else {
                         Log.d(DetailFragment.class.getName(),"Add to db clicked");
                         mManager.add(mMovie);
                     }
-                    fab.setImageDrawable(ContextCompat.getDrawable(getActivity(),mMovie.isFromDb() ? R.drawable.ic_add_black_24dp : R.drawable.ic_grade_black_24dp));
-                    mMovie.setFromDb(!mMovie.isFromDb());
+
+                    fab.setImageDrawable(ContextCompat.getDrawable(getActivity(),mMovie.isFromDb() ? R.drawable.ic_grade_black_24dp : R.drawable.ic_add_black_24dp));
                 }
             });
-
+            fab.setImageDrawable(ContextCompat.getDrawable(getActivity(),mMovie.isFromDb() ? R.drawable.ic_grade_black_24dp : R.drawable.ic_add_black_24dp));
 
             titleTv.setText(mMovie.getTitle());
 
@@ -121,7 +125,13 @@ public class DetailFragment extends Fragment {
         return view;
     }
 
-    private void setImage(final ImageView imageView, final ProgressBar loader,String path, int placeHolderId) {
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.action_switch_source);
+        item.setVisible(false);
+    }
+
+    private void setImage(final ImageView imageView, final ProgressBar loader, String path, int placeHolderId) {
         loader.setVisibility(View.VISIBLE);
         imageView.setVisibility(View.INVISIBLE);
         Picasso.with(mContext).setIndicatorsEnabled(true);

@@ -1,9 +1,12 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
+import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.Loader;
+import android.media.midi.MidiOutputPort;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -181,12 +184,26 @@ public class MainFragment extends Fragment {
         }
     }
 
-    public void loadMovies(View view, String genres) {
-        if (!MoviesStorage.getInstance().isMapEmpty() && genres.equals(MoviesStorage.getInstance().getSelectedGenres())) {
-                fillRecyclerView(view, MoviesStorage.getInstance().getMovieMap());
+    private boolean mLastSource;
+    public void loadMovies(View view, String genres, boolean source) {
+        MoviesStorage storage = MoviesStorage.getInstance();
+//        if (source != mLastSource) {
+//            storage.clearMap();
+//            storage.setSelectedGenres("-1");
+//            mLastSource = source;
+//        }
+        if (!source) {
+            if (!storage.isMapEmpty() && genres.equals(storage.getSelectedGenres())) {
+                fillRecyclerView(view, storage.getMovieMap());
+            } else {
+                MovieDownloadService.startDownload(getActivity(),MovieDownloadService.RESULT_KEY,genres);
+            }
         } else {
-            MovieDownloadService.startDownload(getActivity(),MovieDownloadService.RESULT_KEY,genres);
+
+                fillRecyclerView(view, storage.getMovieMap());
+
         }
+
     }
 
     @Override

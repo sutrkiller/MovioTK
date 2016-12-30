@@ -12,7 +12,7 @@ import pv256.fi.muni.cz.moviotk.uco409735.Db.MovioContract.MovieEntry;
 public class MovioDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "movio.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 4;
 
     public MovioDbHelper(Context context) {
         super(context,DATABASE_NAME,null,DATABASE_VERSION);
@@ -26,7 +26,7 @@ public class MovioDbHelper extends SQLiteOpenHelper {
                 MovieEntry.COLUMN_POPULARITY + " REAL, " +
                 MovieEntry.COLUMN_COVER_PATH + " TEXT, " +
                 MovieEntry.COLUMN_BACKDROP_PATH + " TEXT, " +
-                MovieEntry.COLUMN_RELEASE_DATE + " TEXT " +
+                MovieEntry.COLUMN_RELEASE_DATE + " TEXT, " +
                 MovieEntry.COLUMN_FROM_DB + " INTEGER " +
                 " );";
         database.execSQL(SQL_CREATE_TABLE);
