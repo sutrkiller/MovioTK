@@ -1,12 +1,17 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
 import android.animation.ValueAnimator;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -19,22 +24,34 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import pv256.fi.muni.cz.moviotk.uco409735.Data.MoviesStorage;
+import pv256.fi.muni.cz.moviotk.uco409735.Db.MovieManager;
+import pv256.fi.muni.cz.moviotk.uco409735.Db.MovioContract;
 
 /**
  * Launching activity of the program.
  *
  * @author Tobias Kamenicky <tobias.kamenicky@gmail.com>
  */
-public class MainActivity extends AppCompatActivity implements MainFragment.OnMovieSelectedListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements MainFragment.OnMovieSelectedListener, NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private SharedPreferences mPrefs;
     public static final String PREF_THEME = "PREF_THEME";
     public static final String SELECTED_GENRES = "SELECTED_GENRES";
+    public static final String SELECTED_SOURCE = "SELECTED_SOURCE";
     public static final String APP_NAME = "MovioTK";
     private int mCurrentTheme;
     private boolean mTwoPane;
+    private boolean mSource;
     private ActionBarDrawerToggle mToggle;
     private FragmentManager.OnBackStackChangedListener mOnBackStackChangedListener;
+    private Switch mSourceSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         mPrefs = getSharedPreferences(APP_NAME, MODE_PRIVATE);
         mCurrentTheme = mPrefs.getInt(PREF_THEME, R.style.Theme_NoActionBar);
         setTheme(mCurrentTheme);
+
+        getLoaderManager().initLoader(1,null,this);
 
         setUpContentView(savedInstanceState);
         setUpToolbar();
@@ -57,19 +76,20 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
 
         prepareNavigationDrawer();
         restoreSelectedGenres();
+        mSource = mPrefs.getBoolean(SELECTED_SOURCE,false);
         reloadMovies();
-        //View count = findViewById(R.id.fragment_main);
     }
 
     private void reloadMovies() {
         MainFragment fr = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
         if (fr == null) return;
         View view = fr.getView();
-        fr.loadMovies(view,getSelectedGenres());
+        fr.loadMovies(view, getSelectedGenres(),mSource);
     }
 
     //TODO: maybe dynamically populate menu somehow?
-        private String[] mGenres = {"28","12","16","35","80","99","18","10751","14","36","27","10402","9648","10749","878","10770","53","10752","37"};
+    private String[] mGenres = {"28", "12", "16", "35", "80", "99", "18", "10751", "14", "36", "27", "10402", "9648", "10749", "878", "10770", "53", "10752", "37"};
+
     private String getSelectedGenres() {
         NavigationView view = (NavigationView) findViewById(R.id.nav_view);
         if (view == null) return "";
@@ -79,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
             if (!menu.getItem(i).isChecked()) continue;
             result.append(mGenres[i]).append(",");
         }
-        if (result.length()>0) result.deleteCharAt(result.length() - 1);
+        if (result.length() > 0) result.deleteCharAt(result.length() - 1);
         return result.toString();
     }
 
@@ -133,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         for (int i = 0; i < menu.size(); ++i) {
             result.append(menu.getItem(i).isChecked() ? "1" : "0").append(";");
         }
-        if (result.length()>0) result.deleteCharAt(result.length() - 1);
+        if (result.length() > 0) result.deleteCharAt(result.length() - 1);
         mPrefs.edit().putString(SELECTED_GENRES, result.toString()).apply();
     }
 
@@ -190,7 +210,6 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
 
     private void setUpToolbar() {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //toolbar.setTitle(getTitle());
         setSupportActionBar(toolbar);
     }
 
@@ -227,6 +246,25 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        mSourceSwitch = (Switch) menu.findItem(R.id.action_switch_source).getActionView().findViewById(R.id.switchForActionBar);
+        mSourceSwitch.setChecked(mSource);
+
+        if (mSourceSwitch != null) {
+            mSourceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                    mSource = isChecked;
+                    MoviesStorage.getInstance().clearMap();
+                    Snackbar.make(mSourceSwitch, "Source changed to " + (mSource ? "Database" : "Internet"), Snackbar.LENGTH_SHORT).show();
+                    if (!isChecked) {
+                        reloadMovies();
+                    } else {
+                        getLoaderManager().restartLoader(1,null,MainActivity.this);
+                    }
+                }
+            });
+        }
+
         Log.i(MainActivity.class.getName(), "onCreateOptionsMenu");
         return true;
     }
@@ -241,8 +279,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     protected void onPause() {
         super.onPause();
         Log.i(MainActivity.class.getName(), "onPause");
-        //mPrefs.edit().putStringSet(SELECTED_GENRES,mSelectedGenres).apply();
         saveSelectedGenres();
+        mPrefs.edit().putBoolean(SELECTED_SOURCE,mSource).apply();
     }
 
     @Override
@@ -268,6 +306,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
 //                task.execute();
                 switchThemeOnClick(null);
                 return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -308,8 +347,31 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         item.setChecked(!item.isChecked());
-
         return false;
     }
 
+    @Override
+    public Loader onCreateLoader(int i, Bundle bundle) {
+        return new CursorLoader(this, MovioContract.MovieEntry.CONTENT_URI, MovieManager.MOVIE_COLS,null,null,MovioContract.MovieEntry.COLUMN_RELEASE_DATE + " ASC");
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data != null && mSource) {
+            MoviesStorage storage = MoviesStorage.getInstance();
+            storage.setSelectedGenres("");
+            ArrayList<Movie> list = new ArrayList<>();
+            while (data.moveToNext()) {
+                list.add(MovieManager.getMovieFromCursor(data));
+            }
+            data.close();
+            storage.addMovieCategory("Favorites",list);
+            reloadMovies();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
 }
