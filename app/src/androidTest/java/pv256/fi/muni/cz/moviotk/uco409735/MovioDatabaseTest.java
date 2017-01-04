@@ -1,17 +1,9 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 import android.test.AndroidTestCase;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import pv256.fi.muni.cz.moviotk.uco409735.Db.MovieManager;
-import pv256.fi.muni.cz.moviotk.uco409735.Db.MovioContract;
-
-import static org.junit.Assert.*;
+import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
+import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract;
 
 public class MovioDatabaseTest extends AndroidTestCase {
     private MovieManager mManager;

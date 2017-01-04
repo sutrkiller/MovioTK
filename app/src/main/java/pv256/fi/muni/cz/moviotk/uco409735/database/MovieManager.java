@@ -1,4 +1,4 @@
-package pv256.fi.muni.cz.moviotk.uco409735.Db;
+package pv256.fi.muni.cz.moviotk.uco409735.database;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -8,7 +8,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import pv256.fi.muni.cz.moviotk.uco409735.Db.MovioContract.MovieEntry;
+import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract.MovieEntry;
 import pv256.fi.muni.cz.moviotk.uco409735.Movie;
 
 /**

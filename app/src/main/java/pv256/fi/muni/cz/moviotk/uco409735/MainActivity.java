@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -26,13 +25,13 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import pv256.fi.muni.cz.moviotk.uco409735.Data.MoviesStorage;
-import pv256.fi.muni.cz.moviotk.uco409735.Db.MovieManager;
-import pv256.fi.muni.cz.moviotk.uco409735.Db.MovioContract;
+import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
+import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract;
+import pv256.fi.muni.cz.moviotk.uco409735.sync.UpdaterSyncAdapter;
 
 /**
  * Launching activity of the program.
@@ -62,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         setTheme(mCurrentTheme);
 
         getLoaderManager().initLoader(1,null,this);
+        UpdaterSyncAdapter.initializeSyncAdapter(this);
 
         setUpContentView(savedInstanceState);
         setUpToolbar();
@@ -302,11 +302,10 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
                 getSupportFragmentManager().popBackStackImmediate();
                 return true;
             case R.id.action_switch_theme:
-//                MoviesStorage.GetUpcomingMovies task = new MoviesStorage.GetUpcomingMovies(MainActivity.this);
-//                task.execute();
                 switchThemeOnClick(null);
                 return true;
-
+            case R.id.action_update_db:
+                UpdaterSyncAdapter.syncImmediately(this);
         }
         return super.onOptionsItemSelected(item);
     }

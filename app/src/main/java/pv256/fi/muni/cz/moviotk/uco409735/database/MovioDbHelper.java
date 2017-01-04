@@ -1,9 +1,9 @@
-package pv256.fi.muni.cz.moviotk.uco409735.Db;
+package pv256.fi.muni.cz.moviotk.uco409735.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import pv256.fi.muni.cz.moviotk.uco409735.Db.MovioContract.MovieEntry;
+import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract.MovieEntry;
 
 /**
  * Created by Tobias on 12/29/2016.

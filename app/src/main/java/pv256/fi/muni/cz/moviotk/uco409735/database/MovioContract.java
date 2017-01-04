@@ -1,17 +1,15 @@
-package pv256.fi.muni.cz.moviotk.uco409735.Db;
+package pv256.fi.muni.cz.moviotk.uco409735.database;
 
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
-
-import java.util.Date;
 
 /**
  * Created by Tobias on 12/29/2016.
  */
 
 public class MovioContract {
-    public static final String CONTENT_AUTHORITY = "cz.muni.fi.pv256.moviotk.app";
+    public static final String CONTENT_AUTHORITY = "pv256.fi.muni.cz.moviotk.uco409735.app";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_MOVIE = "movie";
 

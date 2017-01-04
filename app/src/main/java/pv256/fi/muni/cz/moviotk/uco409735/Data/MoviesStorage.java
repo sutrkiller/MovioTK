@@ -17,6 +17,7 @@ public class MoviesStorage {
     private static MoviesStorage mInstance = null;
 
     private Map<String, ArrayList<Movie>> mMovieMap = new HashMap<>();
+    private Movie mLastMovie;
     private String selectedGenres = "";
 
     private MoviesStorage() {
@@ -75,6 +76,14 @@ public class MoviesStorage {
 
     public void setSelectedGenres(String selectedGenres) {
         this.selectedGenres = selectedGenres;
+    }
+
+    public Movie getLastMovie() {
+        return mLastMovie;
+    }
+
+    public void setLastMovie(Movie mLastMovie) {
+        this.mLastMovie = mLastMovie;
     }
 }
 

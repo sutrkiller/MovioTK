@@ -3,6 +3,7 @@ package pv256.fi.muni.cz.moviotk.uco409735.Data;
 import pv256.fi.muni.cz.moviotk.uco409735.Movie;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 
@@ -30,4 +31,7 @@ public interface MovieDbApi {
         @Query(value = "primary_release_date.lte") String dateTo,
         @Query(QUERY_PARAM_WITH_GENRES) String withGenres
     );
+
+    @GET("3/movie/{id}")
+    Call<Movie> getMovie(@Path("id") Long movieId,@Query(QUERY_PARAM_API_KEY) String apiKey,@Query("language") String lang);
 }

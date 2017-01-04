@@ -28,7 +28,7 @@ import com.squareup.picasso.Picasso;
 
 import pv256.fi.muni.cz.moviotk.uco409735.Adapters.MovieRecyclerViewAdapter;
 import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDbApi;
-import pv256.fi.muni.cz.moviotk.uco409735.Db.MovieManager;
+import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
 
 /**
  * Movie detail is part of MainLayout on screens < 900px, otherwise single fragment.
