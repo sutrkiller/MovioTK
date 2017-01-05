@@ -170,9 +170,9 @@ public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (Exception e) {
             Log.e(UpdaterSyncAdapter.class.getName(), e.getMessage());
         } finally {
-            //if (updated > 0) {
+            if (updated > 0) {
                 notifyUpdated(updated, count);
-            //}
+            }
         }
     }
 
