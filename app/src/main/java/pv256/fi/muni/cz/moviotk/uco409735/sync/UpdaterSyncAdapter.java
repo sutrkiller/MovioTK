@@ -146,16 +146,10 @@ public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
         int updated = 0;
         int count = 0;
         try {
-            ArrayList<Movie> movies = new ArrayList<>();
-            Cursor cursorMovies = provider.query(MovioContract.MovieEntry.CONTENT_URI, null, null, null, null);
-            if (cursorMovies != null) {
-                while (cursorMovies.moveToNext()) {
-                    movies.add(MovieManager.getMovieFromCursor(cursorMovies));
-                }
-                cursorMovies.close();
-            }
-            count = movies.size();
             MovieManager mm = new MovieManager(getContext());
+            ArrayList<Movie> movies = mm.findAll();
+            count = movies.size();
+
             for (Movie movie : movies) {
                 MovieDbApi api = initRetrofit();
                 Movie newMovie = api.getMovie(movie.getId(), MovieDbApi.API_KEY, MovieDbApi.QUERY_PARAM_LANGUAGE).execute().body();
@@ -166,7 +160,6 @@ public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                 }
             }
-            //TODO: update in storage (only after immediate)
         } catch (Exception e) {
             Log.e(UpdaterSyncAdapter.class.getName(), e.getMessage());
         } finally {

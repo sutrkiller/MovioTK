@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         restoreSelectedGenres();
         mSource = mPrefs.getBoolean(SELECTED_SOURCE,false);
         reloadMovies();
+        UpdaterSyncAdapter.syncImmediately(this);
     }
 
     private void reloadMovies() {
@@ -305,7 +306,13 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
                 switchThemeOnClick(null);
                 return true;
             case R.id.action_update_db:
+                Snackbar.make(findViewById(R.id.action_update_db),"Checking updates...",Snackbar.LENGTH_SHORT).show();
                 UpdaterSyncAdapter.syncImmediately(this);
+                if (mSource) {
+                    getLoaderManager().restartLoader(1,null,MainActivity.this);
+                }
+                Snackbar.make(findViewById(R.id.action_update_db),"Updating finished",Snackbar.LENGTH_SHORT).show();
+
         }
         return super.onOptionsItemSelected(item);
     }

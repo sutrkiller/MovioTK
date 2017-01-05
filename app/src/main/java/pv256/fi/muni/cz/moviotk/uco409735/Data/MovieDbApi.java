@@ -33,5 +33,7 @@ public interface MovieDbApi {
     );
 
     @GET("3/movie/{id}")
-    Call<Movie> getMovie(@Path("id") Long movieId,@Query(QUERY_PARAM_API_KEY) String apiKey,@Query("language") String lang);
+    Call<Movie> getMovie(@Path("id") Long movieId,
+                         @Query(QUERY_PARAM_API_KEY) String apiKey,
+                         @Query("language") String lang);
 }

@@ -35,7 +35,6 @@ import pv256.fi.muni.cz.moviotk.uco409735.R;
 public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecyclerViewAdapter.ViewHolder> {
     public interface OnItemClickListener {
         void onItemClick(Movie movie);
-
         void onItemLongClick(Movie movie);
     }
 
@@ -80,7 +79,6 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
 
         ViewHolder(View itemView) {
             super(itemView);
-            //mView = itemView;
             mRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.list_item_text_layout);
             mBackdropImage = (ImageView) itemView.findViewById(R.id.list_item_backdrop_image);
             mTitle = (TextView) itemView.findViewById(R.id.list_item_title);

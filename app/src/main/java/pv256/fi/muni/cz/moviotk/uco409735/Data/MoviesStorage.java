@@ -17,7 +17,6 @@ public class MoviesStorage {
     private static MoviesStorage mInstance = null;
 
     private Map<String, ArrayList<Movie>> mMovieMap = new HashMap<>();
-    private Movie mLastMovie;
     private String selectedGenres = "";
 
     private MoviesStorage() {
@@ -35,28 +34,9 @@ public class MoviesStorage {
         return mMovieMap;
     }
 
-    public ArrayList<Movie> getMovieCategory(String category) {
-        Log.d(MoviesStorage.class.getName(), "getMovieCategory() called");
-        ArrayList<Movie> list = mMovieMap.get(category);
-        return list == null ? new ArrayList<Movie>() : list;
-    }
-
-    public void setMovieMap(Map<String, ArrayList<Movie>> map) {
-        Log.d(MoviesStorage.class.getName(), "setMovieMap() called");
-        if (map != null) {
-            mMovieMap.clear();
-            mMovieMap.putAll(map);
-        }
-    }
-
     public void addMovieCategory(String category, ArrayList<Movie> movies) {
         Log.d(MoviesStorage.class.getName(), "addMovieCategory() called");
         mMovieMap.put(category, movies);
-    }
-
-    public void addMovieMap(Map<String, ArrayList<Movie>> map) {
-        Log.d(MoviesStorage.class.getName(), "addMovieMap() called");
-        mMovieMap.putAll(map);
     }
 
     public void clearMap() {
@@ -78,12 +58,5 @@ public class MoviesStorage {
         this.selectedGenres = selectedGenres;
     }
 
-    public Movie getLastMovie() {
-        return mLastMovie;
-    }
-
-    public void setLastMovie(Movie mLastMovie) {
-        this.mLastMovie = mLastMovie;
-    }
 }
 
