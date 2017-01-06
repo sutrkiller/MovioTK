@@ -26,103 +26,100 @@ import android.widget.TextView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import pv256.fi.muni.cz.moviotk.uco409735.Adapters.MovieRecyclerViewAdapter;
-import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDbApi;
+import pv256.fi.muni.cz.moviotk.uco409735.adapters.MovieRecyclerViewAdapter;
+import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDbApi;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
+import pv256.fi.muni.cz.moviotk.uco409735.detail.DetailContract;
+import pv256.fi.muni.cz.moviotk.uco409735.detail.DetailPresenter;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 
 /**
  * Movie detail is part of MainLayout on screens < 900px, otherwise single fragment.
+ *
  * @author Tobias <tobias.kamenicky@gmail.com>
  */
 
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements DetailContract.View {
 
     public static final String TAG = DetailFragment.class.getSimpleName();
-    private static final String ARGS_MOVIE = "args_movie";
 
     private Context mContext;
-    private Movie mMovie;
-    private MovieManager mManager;
+    private View mView;
+    private DetailContract.UserInteractions mPresenter;
 
     public static DetailFragment newInstance(Movie movie) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARGS_MOVIE,movie);
+        args.putParcelable(DetailContract.ARGS_MOVIE, movie);
         fragment.setArguments(args);
         return fragment;
     }
 
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity();
         Bundle args = getArguments();
-        if(args != null) {
-            mMovie = args.getParcelable(ARGS_MOVIE);
+        Movie movie = null;
+        if (args != null) {
+            movie = args.getParcelable(DetailContract.ARGS_MOVIE);
         }
-        mManager = new MovieManager(getActivity());
         setHasOptionsMenu(true);
+
+        mPresenter = new DetailPresenter(this, movie, new MovieManager(mContext));
+    }
+
+    public void onSaveToFavoritesClicked() {
+        mPresenter.onSaveToFavoritesClicked();
+    }
+
+    public void setFavoritesButtonDrawable(int id) {
+        FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab_detail);
+        fab.setImageDrawable(ContextCompat.getDrawable(getActivity(), id));
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mView = inflater.inflate(R.layout.fragment_detail, container, false);
+        if (mPresenter.valid()) {
+            TextView movieTitle = (TextView) mView.findViewById(R.id.detail_movie_title);
+            TextView movieRating = (TextView) mView.findViewById(R.id.detail_movie_rating);
+            ImageView backdropImg = (ImageView) mView.findViewById(R.id.detail_backdrop_image);
+            ProgressBar backdropLoader = (ProgressBar) mView.findViewById(R.id.detail_backdrop_loader);
+            ProgressBar coverLoader = (ProgressBar) mView.findViewById(R.id.detail_cover_loader);
+            ImageView coverImg = (ImageView) mView.findViewById(R.id.detail_cover_image);
+            final FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab_detail);
 
+            Movie movie = mPresenter.getMovie();
 
-        View view = inflater.inflate(R.layout.fragment_detail,container,false);
-
-        TextView titleTv = (TextView) view.findViewById(R.id.detail_movie);
-        TextView titleLowTv = (TextView) view.findViewById(R.id.detail_movie_low);
-        TextView movieTitle = (TextView) view.findViewById(R.id.detail_movie_title);
-        TextView movieRating = (TextView) view.findViewById(R.id.detail_movie_rating);
-        ImageView backdropImg = (ImageView) view.findViewById(R.id.detail_backdrop_image);
-        ProgressBar backdropLoader = (ProgressBar) view.findViewById(R.id.detail_backdrop_loader);
-        ProgressBar coverLoader = (ProgressBar) view.findViewById(R.id.detail_cover_loader);
-
-        ImageView coverImg = (ImageView) view.findViewById(R.id.detail_cover_image);
-        final FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab_detail);
-
-        if(mMovie != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mMovie.setFromDb(!mMovie.isFromDb());
-                    if (!mMovie.isFromDb()) {
-                        Log.d(DetailFragment.class.getName(),"Remove from db clicked");
-                        mManager.remove(mMovie.getId());
-                    } else {
-                        Log.d(DetailFragment.class.getName(),"Add to db clicked");
-                        mManager.add(mMovie);
-                    }
-
-                    fab.setImageDrawable(ContextCompat.getDrawable(getActivity(),mMovie.isFromDb() ? R.drawable.ic_grade_black_24dp : R.drawable.ic_add_black_24dp));
-                }
-            });
-            fab.setImageDrawable(ContextCompat.getDrawable(getActivity(),mMovie.isFromDb() ? R.drawable.ic_grade_black_24dp : R.drawable.ic_add_black_24dp));
-
-            titleTv.setText(mMovie.getTitle());
-
-            String year = mMovie.getReleaseDate();
-            SpannableString textTitle = new SpannableString(mMovie.getTitle());
-            SpannableString textDate = new SpannableString(" ("+year+")");
-            textDate.setSpan(new RelativeSizeSpan(0.7f),0,textDate.length(),0);
-            CharSequence titleFinal =  TextUtils.concat(textTitle,textDate);
+            String year = movie.getReleaseDate();
+            SpannableString textTitle = new SpannableString(movie.getTitle());
+            SpannableString textDate = new SpannableString(" (" + year + ")");
+            textDate.setSpan(new RelativeSizeSpan(0.7f), 0, textDate.length(), 0);
+            CharSequence titleFinal = TextUtils.concat(textTitle, textDate);
 
             movieTitle.setText(titleFinal);
-            setImage(backdropImg,backdropLoader,mMovie.getBackdropPath(),R.drawable.backdrop_placeholder);
-            setImage(coverImg,coverLoader,mMovie.getCoverPath(),R.drawable.cover_placeholder);
+            setImage(backdropImg, backdropLoader, movie.getBackdropPath(), R.drawable.backdrop_placeholder);
+            setImage(coverImg, coverLoader, movie.getCoverPath(), R.drawable.cover_placeholder);
 
-            Drawable star = ResourcesCompat.getDrawable(mContext.getResources(),R.drawable.star,mContext.getTheme());
+            Drawable star = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.star, mContext.getTheme());
 
             Resources r = getResources();
             int pxBound = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, r.getDisplayMetrics());
-            if (star != null) star.setBounds(0,0,pxBound,pxBound);
-            movieRating.setCompoundDrawables(star,null,null,null);
+            if (star != null) star.setBounds(0, 0, pxBound, pxBound);
+            movieRating.setCompoundDrawables(star, null, null, null);
 
-            movieRating.setText(String.valueOf(mMovie.getPopularity()));
+            movieRating.setText(String.valueOf(movie.getPopularity()));
+
+            setFavoritesButtonDrawable(movie.isFromDb() ? R.drawable.ic_grade_black_24dp : R.drawable.ic_add_black_24dp);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onSaveToFavoritesClicked();
+                }
+            });
         }
-
-        return view;
+        return mView;
     }
 
     @Override
@@ -136,7 +133,7 @@ public class DetailFragment extends Fragment {
         imageView.setVisibility(View.INVISIBLE);
         Picasso.with(mContext).setIndicatorsEnabled(true);
         Picasso.with(mContext).setLoggingEnabled(true);
-        Picasso.with(mContext).load(MovieDbApi.IMAGES_URL+path)
+        Picasso.with(mContext).load(MovieDbApi.IMAGES_URL + path)
                 .placeholder(placeHolderId)
                 .error(R.drawable.image_not_available)
                 .fit()
@@ -144,14 +141,14 @@ public class DetailFragment extends Fragment {
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {
-                        Log.d(MovieRecyclerViewAdapter.class.getName(),"Image downloaded.");
+                        Log.d(MovieRecyclerViewAdapter.class.getName(), "Image downloaded.");
                         loader.setVisibility(View.INVISIBLE);
                         imageView.setVisibility(View.VISIBLE);
                     }
 
                     @Override
                     public void onError() {
-                        Log.d(MovieRecyclerViewAdapter.class.getName(),"Image downloading failed.");
+                        Log.d(MovieRecyclerViewAdapter.class.getName(), "Image downloading failed.");
                         loader.setVisibility(View.INVISIBLE);
                         imageView.setVisibility(View.VISIBLE);
                     }

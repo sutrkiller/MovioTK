@@ -1,8 +1,8 @@
-package pv256.fi.muni.cz.moviotk.uco409735.Data;
+package pv256.fi.muni.cz.moviotk.uco409735.data;
 
 import com.google.gson.annotations.SerializedName;
 
-import pv256.fi.muni.cz.moviotk.uco409735.Movie;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 
 
 /**

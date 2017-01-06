@@ -1,4 +1,4 @@
-package pv256.fi.muni.cz.moviotk.uco409735.Adapters;
+package pv256.fi.muni.cz.moviotk.uco409735.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -22,8 +22,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDbApi;
-import pv256.fi.muni.cz.moviotk.uco409735.Movie;
+import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDbApi;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 import pv256.fi.muni.cz.moviotk.uco409735.R;
 
 /**

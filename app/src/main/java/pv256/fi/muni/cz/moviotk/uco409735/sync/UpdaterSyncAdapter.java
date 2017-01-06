@@ -10,29 +10,18 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SyncRequest;
 import android.content.SyncResult;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import okhttp3.ResponseBody;
-import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDO;
-import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDbApi;
-import pv256.fi.muni.cz.moviotk.uco409735.Data.MoviesStorage;
+import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDbApi;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
-import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract;
-import pv256.fi.muni.cz.moviotk.uco409735.Movie;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 import pv256.fi.muni.cz.moviotk.uco409735.R;
-import pv256.fi.muni.cz.moviotk.uco409735.service.MovieDownloadService;
-import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 

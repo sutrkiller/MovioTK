@@ -1,4 +1,4 @@
-package pv256.fi.muni.cz.moviotk.uco409735.Adapters;
+package pv256.fi.muni.cz.moviotk.uco409735.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;

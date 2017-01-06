@@ -1,6 +1,6 @@
-package pv256.fi.muni.cz.moviotk.uco409735.Data;
+package pv256.fi.muni.cz.moviotk.uco409735.data;
 
-import pv256.fi.muni.cz.moviotk.uco409735.Movie;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;

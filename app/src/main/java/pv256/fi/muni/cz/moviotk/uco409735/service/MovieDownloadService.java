@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -20,13 +19,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
-import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
-import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDO;
-import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDbApi;
-import pv256.fi.muni.cz.moviotk.uco409735.Data.MoviesStorage;
+import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDO;
+import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDbApi;
+import pv256.fi.muni.cz.moviotk.uco409735.data.MoviesStorage;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
-import pv256.fi.muni.cz.moviotk.uco409735.Movie;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 import pv256.fi.muni.cz.moviotk.uco409735.R;
 import retrofit2.Call;
 import retrofit2.Converter;
@@ -96,7 +94,6 @@ public class MovieDownloadService extends IntentService {
 
             MoviesStorage.getInstance().clearMap();
             MoviesStorage.getInstance().setSelectedGenres("-1");
-            //initRetrofit();
             Calendar cal = Calendar.getInstance();
             String from = encodeDate(cal);
             cal.add(Calendar.DATE, 7);
