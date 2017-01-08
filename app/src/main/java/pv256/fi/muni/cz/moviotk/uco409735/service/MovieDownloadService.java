@@ -24,6 +24,8 @@ import okhttp3.ResponseBody;
 import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDO;
 import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDbApi;
 import pv256.fi.muni.cz.moviotk.uco409735.Data.MoviesStorage;
+import pv256.fi.muni.cz.moviotk.uco409735.Db.MovieManager;
+import pv256.fi.muni.cz.moviotk.uco409735.Db.MovioContract;
 import pv256.fi.muni.cz.moviotk.uco409735.Movie;
 import pv256.fi.muni.cz.moviotk.uco409735.R;
 import retrofit2.Call;
@@ -42,6 +44,7 @@ public class MovieDownloadService extends IntentService {
     private static final String EXTRA_DOWNLOAD_KEY = "pv256.fi.muni.cz.moviotk.uco409735.Services.extra.DOWNLOAD";
 
     private Gson mGson;
+    private MovieManager mManager;
     private Retrofit mRetrofit;
     private MovieDbApi movieDbApi;
 
@@ -52,6 +55,7 @@ public class MovieDownloadService extends IntentService {
     public MovieDownloadService(String name) {
         super(name);
         mGson = new Gson();
+        //mManager = new MovieManager(this);
     }
 
     /**
@@ -127,6 +131,14 @@ public class MovieDownloadService extends IntentService {
             if (response != null) {
                 if (response.isSuccessful()) {
                     Movie[] movies = (Movie[]) response.body();
+
+                    mManager = new MovieManager(this);
+                    for (Movie mov: movies) {
+                        if (mManager.contains(mov.getId())) {
+                            mov.setFromDb(true);
+                        }
+                    }
+
                     MoviesStorage.getInstance().addMovieCategory(category, new ArrayList<>(Arrays.asList(movies)));
                     return true;
                 } else {
