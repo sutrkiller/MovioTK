@@ -69,12 +69,13 @@ android {
 
     productFlavors {
         primary {
+            applicationId "pv256.fi.muni.cz.moviotk.uco409735"
             resValue "string", "app_name", "MovioTK"
             buildConfigField "boolean" , "LOGGING_ENABLED" , "false"
         }
 
-        pro {
-            applicationId "pv256.fi.muni.cz.moviotk.uco409735.pro"
+        secondary {
+            applicationId "pv256.fi.muni.cz.moviotk.uco409735.secondary"
             resValue "string", "app_name", "MovioTK PRO"
             buildConfigField "boolean" , "LOGGING_ENABLED" , "true"
         }

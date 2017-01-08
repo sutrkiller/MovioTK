@@ -1,7 +1,7 @@
 package pv256.fi.muni.cz.moviotk.uco409735.detail;
 
 import android.os.Bundle;
-import android.util.Log;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 
 import pv256.fi.muni.cz.moviotk.uco409735.DetailFragment;
 import pv256.fi.muni.cz.moviotk.uco409735.R;

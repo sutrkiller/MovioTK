@@ -36,4 +36,6 @@
     <string name="sync_account_type">pv256.fi.muni.cz.moviotk.uco409735.sync.account</string>
     <string name="update_db">Aktualizovat db</string>
     <string name="db_net">DB/Net</string>
+    <string name="director">Režisér</string>
+    <string name="explore_the_movies">Svět filmů</string>
 </resources>

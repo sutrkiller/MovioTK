@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDbApi;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 import pv256.fi.muni.cz.moviotk.uco409735.R;
 

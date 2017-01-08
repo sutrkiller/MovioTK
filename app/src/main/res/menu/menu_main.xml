@@ -26,10 +26,10 @@
         app:showAsAction="ifRoom"
         />
 
-    <item
-        android:id="@+id/action_switch_theme"
-        android:icon="@drawable/ic_swap_horiz_white_24dp"
-        android:orderInCategory="100"
-        android:title="@string/switch_theme"
-        app:showAsAction="ifRoom" />
+    <!--<item-->
+        <!--android:id="@+id/action_switch_theme"-->
+        <!--android:icon="@drawable/ic_swap_horiz_white_24dp"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="@string/switch_theme"-->
+        <!--app:showAsAction="ifRoom" />-->
 </menu>
