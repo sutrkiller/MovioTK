@@ -56,11 +56,11 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
     }
 
 
-    public static class SectionViewHolder extends RecyclerView.ViewHolder {
+    private static class SectionViewHolder extends RecyclerView.ViewHolder {
 
         public TextView title;
 
-        public SectionViewHolder(View view, int mTextResourceId) {
+        SectionViewHolder(View view, int mTextResourceId) {
             super(view);
             title = (TextView) view.findViewById(mTextResourceId);
         }
@@ -143,7 +143,7 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
         return position + offset;
     }
 
-    public int sectionedPositionToPosition(int sectionedPosition) {
+    private int sectionedPositionToPosition(int sectionedPosition) {
         if (isSectionHeaderPosition(sectionedPosition)) {
             return RecyclerView.NO_POSITION;
         }
