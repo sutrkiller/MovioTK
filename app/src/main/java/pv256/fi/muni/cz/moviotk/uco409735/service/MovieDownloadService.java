@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -19,13 +20,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 
-import okhttp3.Request;
+import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDO;
 import pv256.fi.muni.cz.moviotk.uco409735.Data.MovieDbApi;
 import pv256.fi.muni.cz.moviotk.uco409735.Data.MoviesStorage;
-import pv256.fi.muni.cz.moviotk.uco409735.Db.MovieManager;
-import pv256.fi.muni.cz.moviotk.uco409735.Db.MovioContract;
+import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
 import pv256.fi.muni.cz.moviotk.uco409735.Movie;
 import pv256.fi.muni.cz.moviotk.uco409735.R;
 import retrofit2.Call;
@@ -38,9 +38,11 @@ public class MovieDownloadService extends IntentService {
 
     public static final String BROADCAST_INTENT = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.broadcast_intent";
     public static final String ACTION_DOWNLOAD = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.download_movies";
+    public static final String ACTION_SINGLE = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.download_single";
     public static final String RESULT_KEY = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.data_result";
 
     private static final String EXTRA_GENRES = "pv256.fi.muni.cz.moviotk.uco409735.Services.extra.GENRES";
+    private static final String EXTRA_ID = "pv256.fi.muni.cz.moviotk.uco409735.Services.extra.ID";
     private static final String EXTRA_DOWNLOAD_KEY = "pv256.fi.muni.cz.moviotk.uco409735.Services.extra.DOWNLOAD";
 
     private Gson mGson;
@@ -55,7 +57,7 @@ public class MovieDownloadService extends IntentService {
     public MovieDownloadService(String name) {
         super(name);
         mGson = new Gson();
-        //mManager = new MovieManager(this);
+        initRetrofit();
     }
 
     /**
@@ -64,7 +66,6 @@ public class MovieDownloadService extends IntentService {
      *
      * @see IntentService
      */
-    // TODO: Customize helper method
     public static void startDownload(Context context, String download_key, String genres) {
         Intent intent = new Intent(context, MovieDownloadService.class);
         intent.setAction(ACTION_DOWNLOAD);
@@ -95,7 +96,7 @@ public class MovieDownloadService extends IntentService {
 
             MoviesStorage.getInstance().clearMap();
             MoviesStorage.getInstance().setSelectedGenres("-1");
-            initRetrofit();
+            //initRetrofit();
             Calendar cal = Calendar.getInstance();
             String from = encodeDate(cal);
             cal.add(Calendar.DATE, 7);
@@ -116,7 +117,6 @@ public class MovieDownloadService extends IntentService {
         }
         Intent broadcastIntent = new Intent(BROADCAST_INTENT);
         LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
-
     }
 
     private String encodeDate(Calendar cal) {
@@ -199,26 +199,28 @@ public class MovieDownloadService extends IntentService {
         return builder;
     }
 
-    private void initRetrofit() {
+    private MovieDbApi initRetrofit() {
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(MovieDbApi.URL)
                 .addConverterFactory(new Converter.Factory() {
                     @Override
                     public Converter<ResponseBody, ?> responseBodyConverter(Type type, java.lang.annotation.Annotation[] annotations, Retrofit retrofit) {
-                        return new Converter<ResponseBody, Movie[]>() {
-                            @Override
-                            public Movie[] convert(ResponseBody value) throws IOException {
-                                MovieDO resultWrapper = mGson.fromJson(value.charStream(), MovieDO.class);
-                                value.close();
-                                return resultWrapper.getResults();
-                            }
-                        };
+
+                            return new Converter<ResponseBody, Movie[]>() {
+                                @Override
+                                public Movie[] convert(ResponseBody value) throws IOException {
+                                    MovieDO resultWrapper = mGson.fromJson(value.charStream(), MovieDO.class);
+                                    value.close();
+                                    return resultWrapper.getResults();
+                                }
+                            };
                     }
                 })
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         movieDbApi = mRetrofit.create(MovieDbApi.class);
+        return movieDbApi;
     }
 
 

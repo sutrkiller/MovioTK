@@ -134,4 +134,34 @@ public class Movie implements Parcelable {
     public void setFromDb(boolean mFromDb) {
         this.mFromDb = mFromDb;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Movie movie = (Movie) o;
+
+        if (mId != movie.mId) return false;
+        if (Float.compare(movie.mPopularity, mPopularity) != 0) return false;
+        if (mFromDb != movie.mFromDb) return false;
+        if (!mReleaseDate.equals(movie.mReleaseDate)) return false;
+        if (mCoverPath != null ? !mCoverPath.equals(movie.mCoverPath) : movie.mCoverPath != null)
+            return false;
+        if (!mTitle.equals(movie.mTitle)) return false;
+        return mBackdropPath != null ? mBackdropPath.equals(movie.mBackdropPath) : movie.mBackdropPath == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (mId ^ (mId >>> 32));
+        result = 31 * result + mReleaseDate.hashCode();
+        result = 31 * result + (mCoverPath != null ? mCoverPath.hashCode() : 0);
+        result = 31 * result + mTitle.hashCode();
+        result = 31 * result + (mBackdropPath != null ? mBackdropPath.hashCode() : 0);
+        result = 31 * result + (mPopularity != +0.0f ? Float.floatToIntBits(mPopularity) : 0);
+        result = 31 * result + (mFromDb ? 1 : 0);
+        return result;
+    }
 }

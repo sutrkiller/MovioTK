@@ -34,28 +34,9 @@ public class MoviesStorage {
         return mMovieMap;
     }
 
-    public ArrayList<Movie> getMovieCategory(String category) {
-        Log.d(MoviesStorage.class.getName(), "getMovieCategory() called");
-        ArrayList<Movie> list = mMovieMap.get(category);
-        return list == null ? new ArrayList<Movie>() : list;
-    }
-
-    public void setMovieMap(Map<String, ArrayList<Movie>> map) {
-        Log.d(MoviesStorage.class.getName(), "setMovieMap() called");
-        if (map != null) {
-            mMovieMap.clear();
-            mMovieMap.putAll(map);
-        }
-    }
-
     public void addMovieCategory(String category, ArrayList<Movie> movies) {
         Log.d(MoviesStorage.class.getName(), "addMovieCategory() called");
         mMovieMap.put(category, movies);
-    }
-
-    public void addMovieMap(Map<String, ArrayList<Movie>> map) {
-        Log.d(MoviesStorage.class.getName(), "addMovieMap() called");
-        mMovieMap.putAll(map);
     }
 
     public void clearMap() {
@@ -76,5 +57,6 @@ public class MoviesStorage {
     public void setSelectedGenres(String selectedGenres) {
         this.selectedGenres = selectedGenres;
     }
+
 }
 

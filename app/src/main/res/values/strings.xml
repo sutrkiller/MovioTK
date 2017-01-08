@@ -32,4 +32,8 @@
     <string name="notification_downloading_title">Downloading movies data</string>
     <string name="notification_downloaded_title">Downloading finished</string>
     <string name="notification_downloaded_text">Movies data downloaded successfully</string>
+    <string name="content_authority">pv256.fi.muni.cz.moviotk.uco409735.app</string>
+    <string name="sync_account_type">pv256.fi.muni.cz.moviotk.uco409735.sync.account</string>
+    <string name="update_db">Update db</string>
+    <string name="db_net">DB/Net</string>
 </resources>

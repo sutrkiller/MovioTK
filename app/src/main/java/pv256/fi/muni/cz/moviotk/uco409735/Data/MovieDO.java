@@ -21,6 +21,7 @@ public class MovieDO {
         return mResults;
     }
 
+    @SuppressWarnings("unused")
     public void setResults(Movie[] results) {
         mResults = results;
     }

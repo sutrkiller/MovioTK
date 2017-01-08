@@ -184,14 +184,8 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private boolean mLastSource;
     public void loadMovies(View view, String genres, boolean source) {
         MoviesStorage storage = MoviesStorage.getInstance();
-//        if (source != mLastSource) {
-//            storage.clearMap();
-//            storage.setSelectedGenres("-1");
-//            mLastSource = source;
-//        }
         if (!source) {
             if (!storage.isMapEmpty() && genres.equals(storage.getSelectedGenres())) {
                 fillRecyclerView(view, storage.getMovieMap());
