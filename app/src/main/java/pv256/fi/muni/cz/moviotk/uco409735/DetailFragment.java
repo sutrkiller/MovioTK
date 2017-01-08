@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,18 +12,28 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.text.TextUtilsCompat;
+import android.support.v7.graphics.Palette;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
+
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
+import pv256.fi.muni.cz.moviotk.uco409735.Adapters.MovieRecyclerViewAdapter;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -69,24 +80,27 @@ public class DetailFragment extends Fragment {
         TextView movieTitle = (TextView) view.findViewById(R.id.detail_movie_title);
         TextView movieRating = (TextView) view.findViewById(R.id.detail_movie_rating);
         ImageView backdropImg = (ImageView) view.findViewById(R.id.detail_backdrop_image);
+        ProgressBar backdropLoader = (ProgressBar) view.findViewById(R.id.detail_backdrop_loader);
+        ProgressBar coverLoader = (ProgressBar) view.findViewById(R.id.detail_cover_loader);
+
         ImageView coverImg = (ImageView) view.findViewById(R.id.detail_cover_image);
 
         if(mMovie != null) {
             titleTv.setText(mMovie.getTitle());
-            titleLowTv.setText(mMovie.getCoverPath());
+            //titleLowTv.setText(mMovie.getCoverPath());
 
             //Title + date
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(mMovie.getReleaseDate());
-            String year = String.valueOf(cal.get(Calendar.YEAR));
+//            Calendar cal = Calendar.getInstance();
+//            cal.setTimeInMillis(mMovie.getReleaseDate());
+            String year = mMovie.getReleaseDate();// String.valueOf(cal.get(Calendar.YEAR));
             SpannableString textTitle = new SpannableString(mMovie.getTitle());
             SpannableString textDate = new SpannableString(" ("+year+")");
             textDate.setSpan(new RelativeSizeSpan(0.7f),0,textDate.length(),0);
             CharSequence titleFinal =  TextUtils.concat(textTitle,textDate);
 
             movieTitle.setText(titleFinal);
-            setImage(backdropImg,mMovie.getBackdropId());
-            setImage(coverImg,mMovie.getCoverId());
+            setImage(backdropImg,backdropLoader,mMovie.getBackdropPath(),R.drawable.backdrop_placeholder);
+            setImage(coverImg,coverLoader,mMovie.getCoverPath(),R.drawable.cover_placeholder);
 
             Drawable star = ResourcesCompat.getDrawable(mContext.getResources(),R.drawable.star,mContext.getTheme());
 
@@ -101,9 +115,35 @@ public class DetailFragment extends Fragment {
         return view;
     }
 
-    private void setImage(ImageView imageView, int drawableId) {
+    private void setImage(final ImageView imageView, final ProgressBar loader,String path, int placeHolderId) {
         //TODO: internet
-        imageView.setImageDrawable(ResourcesCompat.getDrawable(mContext.getResources(), drawableId,mContext.getTheme()));
+        //imageView.setImageDrawable(ResourcesCompat.getDrawable(mContext.getResources(), drawableId,mContext.getTheme()));
+
+        loader.setVisibility(View.VISIBLE);
+        imageView.setVisibility(View.INVISIBLE);
+        Picasso.with(mContext).setIndicatorsEnabled(true);
+        Picasso.with(mContext).setLoggingEnabled(true);
+        Picasso.with(mContext).load("https://image.tmdb.org/t/p/original"+path)
+                .placeholder(placeHolderId)
+                .error(R.drawable.image_not_available)
+                .fit()
+                .centerCrop()
+                .into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(MovieRecyclerViewAdapter.class.getName(),"Image downloaded.");
+                        loader.setVisibility(View.INVISIBLE);
+                        imageView.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        Log.d(MovieRecyclerViewAdapter.class.getName(),"Image downloading failed.");
+                        loader.setVisibility(View.INVISIBLE);
+                        imageView.setVisibility(View.VISIBLE);
+                    }
+                });
+
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 //            imageView.setImageDrawable(mContext.getDrawable(drawableId));
 //        } else {

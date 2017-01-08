@@ -1,7 +1,5 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
-import android.util.ArrayMap;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -16,6 +14,7 @@ import java.util.TimeZone;
 public class MovieData {
     private static MovieData sInstance;
     private Map<String,ArrayList<Movie>> mMovieMap = new HashMap<>(); //TODO: ArrayMap from API 17
+    private String selectedGenres = "";
 
     private MovieData() {initMoviesList();}
 
@@ -29,9 +28,9 @@ public class MovieData {
     private void initMoviesList() {
         for(int i=0;i<4;++i) {
             ArrayList<Movie> movieList = new ArrayList<>();
-            movieList.add(new Movie(i*3 +1,"","",4.6F,getCurrentTime(),"Captain America: Civil War ", R.drawable.captain_america_backdrop, R.drawable.captain_america_cover));
-            movieList.add(new Movie(i*3+2,"","",4.9F,getCurrentTime(),"Mechanic: Resurrection ", R.drawable.mechanic_backdrop, R.drawable.mechanic_cover));
-            movieList.add(new Movie(i*3+3,"","",4.2F,getCurrentTime(),"X-men: Apocalypse", R.drawable.xmen_backdrop, R.drawable.xmen_cover));
+            movieList.add(new Movie(i*3 +1,"/tbhdm8UJAb4ViCTsulYFL3lxMCd.jpg","/dywDjqAJoWudjgtHHIndmY9xvj9.jpg",4.6F,"2016-05-17","Captain America: Civil War "));
+            movieList.add(new Movie(i*3+2,"/tbhdm8UJAb4ViCTsulYFL3lxMCd.jpg","/dywDjqAJoWudjgtHHIndmY9xvj9.jpg",4.9F,"2016-05-17","Mechanic: Resurrection "));
+            movieList.add(new Movie(i*3+3,"/tbhdm8UJAb4ViCTsulYFL3lxMCd.jpg","/dywDjqAJoWudjgtHHIndmY9xvj9.jpg",4.2F,"2016-05-17","X-men: Apocalypse"));
             mMovieMap.put("Category "+(i+1),movieList);
         }
     }
