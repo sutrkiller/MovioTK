@@ -8,20 +8,20 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.azimolabs.conditionwatcher.ConditionWatcher;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.LoadingRecyclerViewInstruction;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withResourceName;
-import static pv256.fi.muni.cz.moviotk.uco409735.CustomMatchers.withCompoundDrawable;
-import static pv256.fi.muni.cz.moviotk.uco409735.CustomMatchers.withFabDrawable;
-import static pv256.fi.muni.cz.moviotk.uco409735.CustomMatchers.withImageDrawable;
+import static pv256.fi.muni.cz.moviotk.uco409735.helpers.CustomMatchers.withFabDrawable;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -68,13 +68,11 @@ public class DetailViewTest {
         }
 
         fab.perform(click());
-        Thread.sleep(1000);
         fab.check(ViewAssertions.matches(withFabDrawable(addVis ? R.drawable.ic_grade_black_24dp : R.drawable.ic_add_black_24dp)));
     }
 
     private void goToDetail() throws Exception {
-        Thread.sleep(1000);
+        ConditionWatcher.waitForCondition(new LoadingRecyclerViewInstruction());
         onView(withId(R.id.recyclerView_movies)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
-        Thread.sleep(1000);
     }
 }

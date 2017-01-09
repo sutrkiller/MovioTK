@@ -1,4 +1,4 @@
-package pv256.fi.muni.cz.moviotk.uco409735;
+package pv256.fi.muni.cz.moviotk.uco409735.helpers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
