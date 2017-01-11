@@ -23,7 +23,7 @@ public class ListPresenter implements ListContract.UserInteractions {
             if (!storage.isMapEmpty() && genres.equals(storage.getSelectedGenres())) {
                 mView.fillRecyclerView(view, storage.getMovieMap());
             } else {
-                MovieDownloadService.startDownload(view.getContext(),MovieDownloadService.RESULT_KEY,genres);
+                MovieDownloadService.startDownload(view.getContext(), genres);
             }
         } else {
 

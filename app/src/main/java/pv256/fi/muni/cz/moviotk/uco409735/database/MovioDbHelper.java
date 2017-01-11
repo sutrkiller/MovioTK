@@ -3,18 +3,19 @@ package pv256.fi.muni.cz.moviotk.uco409735.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract.MovieEntry;
 
 /**
- * Created by Tobias on 12/29/2016.
+ * Database startup
  */
 
-public class MovioDbHelper extends SQLiteOpenHelper {
+class MovioDbHelper extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "movio.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final String DATABASE_NAME = "movio.db";
+    private static final int DATABASE_VERSION = 5;
 
-    public MovioDbHelper(Context context) {
+    MovioDbHelper(Context context) {
         super(context,DATABASE_NAME,null,DATABASE_VERSION);
     }
 
@@ -27,6 +28,7 @@ public class MovioDbHelper extends SQLiteOpenHelper {
                 MovieEntry.COLUMN_COVER_PATH + " TEXT, " +
                 MovieEntry.COLUMN_BACKDROP_PATH + " TEXT, " +
                 MovieEntry.COLUMN_RELEASE_DATE + " TEXT, " +
+                MovieEntry.COLUMN_OVERVIEW + " TEXT, " +
                 MovieEntry.COLUMN_FROM_DB + " INTEGER " +
                 " );";
         database.execSQL(SQL_CREATE_TABLE);

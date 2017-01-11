@@ -18,10 +18,10 @@
             android:layout_height="wrap_content"
 
             android:adjustViewBounds="true"
+            android:background="@color/colorWhite"
             android:contentDescription="@string/movie_backdrop_image"
             android:scaleType="centerCrop"
-            android:tint="#bf212121"
-            android:background="@color/colorWhite"/>
+            android:tint="#bf212121" />
 
         <ProgressBar
             android:id="@+id/detail_backdrop_loader"
@@ -60,7 +60,6 @@
             android:id="@+id/detail_cover_loader"
             style="@android:style/Widget.ProgressBar.Small"
             android:layout_width="wrap_content"
-
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:indeterminate="true"

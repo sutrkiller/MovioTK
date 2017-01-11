@@ -1,11 +1,10 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
 /**
- * Created by Tobias on 1/5/2017.
+ * Testing MainFragment
  */
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 
 import org.junit.Before;
@@ -22,18 +21,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pv256.fi.muni.cz.moviotk.uco409735.data.MoviesStorage;
-import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
-import pv256.fi.muni.cz.moviotk.uco409735.detail.DetailContract;
-import pv256.fi.muni.cz.moviotk.uco409735.detail.DetailPresenter;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 import pv256.fi.muni.cz.moviotk.uco409735.moviesList.ListContract;
 import pv256.fi.muni.cz.moviotk.uco409735.moviesList.ListPresenter;
 import pv256.fi.muni.cz.moviotk.uco409735.service.MovieDownloadService;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,9 +52,9 @@ public class ListPresenterTest {
 
         movies = new HashMap<>();
         ArrayList<Movie> movieList = new ArrayList<>();
-        movieList.add(new Movie(1,"Title",1,"coverPath","backdropPath","2017-1-1",true) );
-        movieList.add(new Movie(2,"Title 2",2,"coverPath 2","backdropPath 2","2017-1-1",true) );
-        movieList.add(new Movie(2,"Title 3",3,"coverPath 3","backdropPath 3","2017-1-1",true) );
+        movieList.add(new Movie(1, "Title", 1, "coverPath", "backdropPath", "2017-1-1", "Overview 1", true));
+        movieList.add(new Movie(2, "Title 2", 2, "coverPath 2", "backdropPath 2", "2017-1-1", "Overview 2", true));
+        movieList.add(new Movie(3, "Title 3", 3, "coverPath 3", "backdropPath 3", "2017-1-1", "Overview 3", true));
         movies.put("Category",movieList);
 
         PowerMockito.mockStatic(MoviesStorage.class);
@@ -102,14 +95,14 @@ public class ListPresenterTest {
         when(storage.isMapEmpty()).thenReturn(false);
         when(storage.getSelectedGenres()).thenReturn("");
         when(view.getContext()).thenReturn(context);
-        PowerMockito.doNothing().when(MovieDownloadService.class,"startDownload", Mockito.any(Context.class),Mockito.any(String.class),Mockito.any(String.class));
+        PowerMockito.doNothing().when(MovieDownloadService.class, "startDownload", Mockito.any(Context.class), Mockito.any(String.class));
 
         listPresenter.loadMovies(view,"1,2",false);
 
         verify(view).getContext();
 
         PowerMockito.verifyStatic();
-        MovieDownloadService.startDownload(eq(context),eq(MovieDownloadService.RESULT_KEY),eq("1,2"));
+        MovieDownloadService.startDownload(eq(context), eq("1,2"));
     }
 }
 

@@ -21,10 +21,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import pv256.fi.muni.cz.moviotk.uco409735.BuildConfig;
+import pv256.fi.muni.cz.moviotk.uco409735.R;
 import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDbApi;
 import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
-import pv256.fi.muni.cz.moviotk.uco409735.R;
 
 /**
  * Adapter for movie list on main page/main fragment.
@@ -33,16 +34,9 @@ import pv256.fi.muni.cz.moviotk.uco409735.R;
  */
 
 public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecyclerViewAdapter.ViewHolder> {
-    public interface OnItemClickListener {
-        void onItemClick(Movie movie);
-        void onItemLongClick(Movie movie);
-    }
-
     private final OnItemClickListener mListener;
-
     private Context mAppContext;
     private ArrayList<Movie> mMovies;
-
     public MovieRecyclerViewAdapter(Context context, ArrayList<Movie> movies, OnItemClickListener listener) {
         mAppContext = context.getApplicationContext();
         mMovies = movies;
@@ -68,6 +62,11 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
         return mMovies.size();
     }
 
+    public interface OnItemClickListener {
+        void onItemClick(Movie movie);
+
+        void onItemLongClick(Movie movie);
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView mBackdropImage;
@@ -95,8 +94,10 @@ public class MovieRecyclerViewAdapter extends RecyclerView.Adapter<MovieRecycler
             mBackdropImage.setVisibility(View.INVISIBLE);
             mImageLoader.setVisibility(View.VISIBLE);
 
-            Picasso.with(context).setIndicatorsEnabled(true);
-            Picasso.with(context).setLoggingEnabled(true);
+            if (BuildConfig.LOGGING_ENABLED) {
+                Picasso.with(context).setIndicatorsEnabled(true);
+                Picasso.with(context).setLoggingEnabled(true);
+            }
             Picasso.with(context).load(MovieDbApi.IMAGES_URL + movie.getBackdropPath())
                     .placeholder(R.drawable.backdrop_placeholder)
                     .error(R.drawable.image_not_available)

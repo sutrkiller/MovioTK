@@ -1,10 +1,9 @@
 <resources>
     <!--<string name="app_name">MovioTK</string>-->
-    <string name="switch_theme">Změnit téma</string>
-    <string name="detail">Detail</string>
+    <!--<string name="switch_theme">Změnit téma</string>-->
     <string name="movie_backdrop_image">Pozadí filmu</string>
     <string name="movie_cover_image">Obálka filmu</string>
-    <string name="search">Vyhledat</string>
+
     <string name="navigation_drawer_open">Otevřít panel</string>
     <string name="navigation_drawer_close">Zavřit panel</string>
     <string name="genres">Žánry</string>
@@ -36,6 +35,9 @@
     <string name="sync_account_type">pv256.fi.muni.cz.moviotk.uco409735.sync.account</string>
     <string name="update_db">Aktualizovat db</string>
     <string name="db_net">DB/Net</string>
-    <string name="director">Režisér</string>
+    <string name="director">Neznámý</string>
     <string name="explore_the_movies">Svět filmů</string>
+    <string name="overview">Obsah</string>
+    <string name="cast">Hrají</string>
+    <string name="crew_image">Obrázek herce</string>
 </resources>

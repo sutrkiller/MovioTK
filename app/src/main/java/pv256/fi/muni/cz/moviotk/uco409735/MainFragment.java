@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ViewStubCompat;
-import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import java.util.Map;
 import pv256.fi.muni.cz.moviotk.uco409735.adapters.MovieRecyclerViewAdapter;
 import pv256.fi.muni.cz.moviotk.uco409735.adapters.SimpleSectionedRecyclerViewAdapter;
 import pv256.fi.muni.cz.moviotk.uco409735.data.MoviesStorage;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 import pv256.fi.muni.cz.moviotk.uco409735.moviesList.ListContract;
 import pv256.fi.muni.cz.moviotk.uco409735.moviesList.ListPresenter;
@@ -43,7 +43,6 @@ public class MainFragment extends Fragment implements ListContract.View {
     private int mPosition = RecyclerView.NO_POSITION;
     private OnMovieSelectedListener mListener;
     private Context mContext;
-    private RecyclerView mRecyclerView;
     private ListContract.UserInteractions mPresenter;
 
     @Override
@@ -84,10 +83,10 @@ public class MainFragment extends Fragment implements ListContract.View {
         if(savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
 
-            if(mPosition != RecyclerView.NO_POSITION) {
-                SimpleSectionedRecyclerViewAdapter adapter = (SimpleSectionedRecyclerViewAdapter) mRecyclerView.getAdapter();
-                mRecyclerView.smoothScrollToPosition(adapter.positionToSectionedPosition(mPosition));
-            }
+//            if(mPosition != RecyclerView.NO_POSITION) {
+//                SimpleSectionedRecyclerViewAdapter adapter = (SimpleSectionedRecyclerViewAdapter) mRecyclerView.getAdapter();
+//                mRecyclerView.smoothScrollToPosition(adapter.positionToSectionedPosition(mPosition));
+//            }
         }
         BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -117,7 +116,7 @@ public class MainFragment extends Fragment implements ListContract.View {
     }
 
     public void fillRecyclerView(View rootView, Map<String,ArrayList<Movie>> movies) {
-        mRecyclerView = (RecyclerView)rootView.findViewById(R.id.recyclerView_movies);
+        RecyclerView mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView_movies);
         ViewStubCompat viewStubEmpty = (ViewStubCompat) rootView.findViewById(R.id.recyclerView_movies_empty);
         View inflated = rootView.findViewById(R.id.recyclerView_movies_empty_infl);
 
