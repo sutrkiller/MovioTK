@@ -18,30 +18,30 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import pv256.fi.muni.cz.moviotk.uco409735.R;
 import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDbApi;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
-import pv256.fi.muni.cz.moviotk.uco409735.R;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by Tobias on 1/4/2017.
+ * Adapter for syncing db periodically from net.
  */
 
 public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
     // Interval at which to sync with the server, in seconds.
-    public static final int SYNC_INTERVAL =  60 * 60 * 24; //day
-    public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
+    private static final int SYNC_INTERVAL = 60 * 60 * 24; //day
+    private static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
 
-    public UpdaterSyncAdapter(Context context, boolean autoInitialize) {
+    UpdaterSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
     }
 
     /**
      * Helper method to schedule the sync adapter periodic execution
      */
-    public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
+    private static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
         Account account = getSyncAccount(context);
         String authority = context.getString(R.string.content_authority);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -81,7 +81,7 @@ public class UpdaterSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param context The context used to access the account service
      * @return a fake account.
      */
-    public static Account getSyncAccount(Context context) {
+    private static Account getSyncAccount(Context context) {
         // Get an instance of the Android account manager
         AccountManager accountManager = (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
 

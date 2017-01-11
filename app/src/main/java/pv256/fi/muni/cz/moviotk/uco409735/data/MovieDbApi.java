@@ -1,5 +1,6 @@
 package pv256.fi.muni.cz.moviotk.uco409735.data;
 
+import pv256.fi.muni.cz.moviotk.uco409735.models.CastWrapper;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -36,4 +37,10 @@ public interface MovieDbApi {
     Call<Movie> getMovie(@Path("id") Long movieId,
                          @Query(QUERY_PARAM_API_KEY) String apiKey,
                          @Query("language") String lang);
+
+    @GET("/3/movie/{id}/credits")
+    Call<CastWrapper> loadCastAndCrew(
+            @Path("id") long id,
+            @Query(QUERY_PARAM_API_KEY) String apiKey
+    );
 }

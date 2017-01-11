@@ -27,14 +27,12 @@ import static pv256.fi.muni.cz.moviotk.uco409735.helpers.CustomMatchers.withFabD
 @LargeTest
 public class DetailViewTest {
 
-    private MainActivity mainActivity;
-
     @Rule
-    public final ActivityTestRule<MainActivity> rule = new ActivityTestRule<MainActivity>(MainActivity.class);
+    public final ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);
 
     @Before
     public void init() {
-        mainActivity = rule.getActivity();
+        @SuppressWarnings("unused") MainActivity mainActivity = rule.getActivity();
     }
 
     @Test
@@ -59,7 +57,7 @@ public class DetailViewTest {
         try {
             fab.check(ViewAssertions.matches(withFabDrawable(R.drawable.ic_add_black_24dp)));
             addVis = true;
-        } catch (AssertionError e) {
+        } catch (AssertionError ignored) {
         }
         try {
             fab.check(ViewAssertions.matches(withFabDrawable(R.drawable.ic_grade_black_24dp)));

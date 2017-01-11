@@ -1,6 +1,9 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -8,11 +11,12 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
-import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,12 +30,18 @@ import android.widget.TextView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import pv256.fi.muni.cz.moviotk.uco409735.adapters.CastRecyclerViewAdapter;
 import pv256.fi.muni.cz.moviotk.uco409735.adapters.MovieRecyclerViewAdapter;
 import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDbApi;
+import pv256.fi.muni.cz.moviotk.uco409735.data.MoviesStorage;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
 import pv256.fi.muni.cz.moviotk.uco409735.detail.DetailContract;
 import pv256.fi.muni.cz.moviotk.uco409735.detail.DetailPresenter;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
+import pv256.fi.muni.cz.moviotk.uco409735.models.CastWrapper;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Crew;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
+import pv256.fi.muni.cz.moviotk.uco409735.service.MovieDownloadService;
 
 /**
  * Movie detail is part of MainLayout on screens < 900px, otherwise single fragment.
@@ -79,9 +89,11 @@ public class DetailFragment extends Fragment implements DetailContract.View {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_detail, container, false);
         if (mPresenter.valid()) {
+            final Movie movie = mPresenter.getMovie();
+
             TextView movieTitle = (TextView) mView.findViewById(R.id.detail_movie_title);
             TextView movieRating = (TextView) mView.findViewById(R.id.detail_movie_rating);
             ImageView backdropImg = (ImageView) mView.findViewById(R.id.detail_backdrop_image);
@@ -90,7 +102,8 @@ public class DetailFragment extends Fragment implements DetailContract.View {
             ImageView coverImg = (ImageView) mView.findViewById(R.id.detail_cover_image);
             final FloatingActionButton fab = (FloatingActionButton) mView.findViewById(R.id.fab_detail);
 
-            Movie movie = mPresenter.getMovie();
+            TextView overviewText = (TextView) mView.findViewById(R.id.detail_movie_overview);
+            overviewText.setText(movie.getOverview());
 
             String year = movie.getReleaseDate();
             SpannableString textTitle = new SpannableString(movie.getTitle());
@@ -99,8 +112,8 @@ public class DetailFragment extends Fragment implements DetailContract.View {
             CharSequence titleFinal = TextUtils.concat(textTitle, textDate);
 
             movieTitle.setText(titleFinal);
-            setImage(backdropImg, backdropLoader, movie.getBackdropPath(), R.drawable.backdrop_placeholder);
-            setImage(coverImg, coverLoader, movie.getCoverPath(), R.drawable.cover_placeholder);
+            setImage(backdropImg, backdropLoader, movie.getBackdropPath(), R.drawable.backdrop_placeholder, R.drawable.image_not_available);
+            setImage(coverImg, coverLoader, movie.getCoverPath(), R.drawable.cover_placeholder, R.drawable.ic_broken_image_black_24dp);
 
             Drawable star = ResourcesCompat.getDrawable(mContext.getResources(), R.drawable.star, mContext.getTheme());
 
@@ -118,24 +131,71 @@ public class DetailFragment extends Fragment implements DetailContract.View {
                     onSaveToFavoritesClicked();
                 }
             });
+
+            BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    setMovieDetails(mView, MoviesStorage.getInstance().getCast(movie.getId()));
+                }
+            };
+
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mBroadcastReceiver, new IntentFilter(MovieDownloadService.BROADCAST_INTENT_CAST));
+
+            if (MoviesStorage.getInstance().getCast(movie.getId()) != null) {
+                setMovieDetails(mView, MoviesStorage.getInstance().getCast(movie.getId()));
+            } else {
+                MovieDownloadService.startDownloadCast(getActivity(), movie.getId());
+            }
         }
+
         return mView;
+    }
+
+    private void setMovieDetails(View mView, CastWrapper cast) {
+        if (cast == null) {
+            mView.findViewById(R.id.detail_header_cast).setVisibility(View.GONE);
+            mView.findViewById(R.id.detail_cast_list).setVisibility(View.GONE);
+            return;
+        }
+
+        TextView directorText = (TextView) mView.findViewById(R.id.detail_movie_director);
+        String director = "unknown";
+        for (Crew crew : cast.getCrew()) {
+            if (crew.getJobDepartment().equals("Director")) {
+                director = crew.getName();
+                break;
+            }
+        }
+        directorText.setText(director);
+
+        RecyclerView recyclerView = (RecyclerView) mView.findViewById(R.id.detail_cast_list);
+        if (recyclerView.getAdapter() == null) {
+            recyclerView.setAdapter(new CastRecyclerViewAdapter(getActivity(), cast.getCast(), 2));
+        } else {
+            recyclerView.swapAdapter(new CastRecyclerViewAdapter(getActivity(), cast.getCast(), 2), true);
+        }
+
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.action_switch_source);
-        item.setVisible(false);
+        if (!MainActivity.mTwoPane) {
+            MenuItem item = menu.findItem(R.id.action_switch_source);
+            item.setVisible(false);
+        }
+
     }
 
-    private void setImage(final ImageView imageView, final ProgressBar loader, String path, int placeHolderId) {
+    private void setImage(final ImageView imageView, final ProgressBar loader, String path, int placeHolderId, int errorId) {
         loader.setVisibility(View.VISIBLE);
         imageView.setVisibility(View.INVISIBLE);
-        Picasso.with(mContext).setIndicatorsEnabled(true);
-        Picasso.with(mContext).setLoggingEnabled(true);
+        if (BuildConfig.LOGGING_ENABLED) {
+            Picasso.with(mContext).setIndicatorsEnabled(true);
+            Picasso.with(mContext).setLoggingEnabled(true);
+        }
         Picasso.with(mContext).load(MovieDbApi.IMAGES_URL + path)
                 .placeholder(placeHolderId)
-                .error(R.drawable.image_not_available)
+                .error(errorId)
                 .fit()
                 .centerCrop()
                 .into(imageView, new Callback() {

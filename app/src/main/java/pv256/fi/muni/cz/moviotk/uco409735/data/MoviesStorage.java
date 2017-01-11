@@ -1,11 +1,13 @@
 package pv256.fi.muni.cz.moviotk.uco409735.data;
 
-import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
+import android.util.LongSparseArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
+import pv256.fi.muni.cz.moviotk.uco409735.models.CastWrapper;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 
 /**
@@ -17,6 +19,7 @@ public class MoviesStorage {
     private static MoviesStorage mInstance = null;
 
     private Map<String, ArrayList<Movie>> mMovieMap = new HashMap<>();
+    private LongSparseArray<CastWrapper> mCastsMap = new LongSparseArray<>();
     private String selectedGenres = "";
 
     private MoviesStorage() {
@@ -27,6 +30,14 @@ public class MoviesStorage {
             mInstance = new MoviesStorage();
         }
         return mInstance;
+    }
+
+    public CastWrapper getCast(long id) {
+        return mCastsMap.get(id);
+    }
+
+    public void putCast(long id, CastWrapper wrapper) {
+        mCastsMap.put(id, wrapper);
     }
 
     public Map<String, ArrayList<Movie>> getMovieMap() {

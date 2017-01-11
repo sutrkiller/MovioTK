@@ -4,22 +4,18 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 
 import java.util.ArrayList;
 
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract.MovieEntry;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 
 /**
- * Created by Tobias on 12/29/2016.
+ * Database functions
  */
 
 public class MovieManager {
-    private static final String TAG = MovieManager.class.getName();
-
-    private static final String WHERE_ID = MovieEntry._ID + " = ?";
-
     public static final String[] MOVIE_COLS = {
             MovieEntry._ID,
             MovieEntry.COLUMN_TITLE,
@@ -27,13 +23,41 @@ public class MovieManager {
             MovieEntry.COLUMN_COVER_PATH,
             MovieEntry.COLUMN_BACKDROP_PATH,
             MovieEntry.COLUMN_RELEASE_DATE,
+            MovieEntry.COLUMN_OVERVIEW,
             MovieEntry.COLUMN_FROM_DB
     };
-
+    private static final String TAG = MovieManager.class.getName();
+    private static final String WHERE_ID = MovieEntry._ID + " = ?";
     private Context mContext;
 
     public MovieManager(Context context) {
         mContext = context.getApplicationContext();
+    }
+
+    public static Movie getMovieFromCursor(Cursor openedCursor) {
+        return new Movie(
+                openedCursor.getLong(0),
+                openedCursor.getString(1),
+                openedCursor.getFloat(2),
+                openedCursor.getString(3),
+                openedCursor.getString(4),
+                openedCursor.getString(5),
+                openedCursor.getString(6),
+                openedCursor.getInt(7) > 0
+        );
+    }
+
+    private static ContentValues getContentValuesFromMovie(Movie movie) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieEntry._ID, movie.getId());
+        contentValues.put(MovieEntry.COLUMN_TITLE, movie.getTitle());
+        contentValues.put(MovieEntry.COLUMN_POPULARITY, movie.getPopularity());
+        contentValues.put(MovieEntry.COLUMN_COVER_PATH, movie.getCoverPath());
+        contentValues.put(MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
+        contentValues.put(MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+        contentValues.put(MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
+        contentValues.put(MovieEntry.COLUMN_FROM_DB, movie.isFromDb() ? 1 : 0);
+        return contentValues;
     }
 
     public boolean contains(long id) {
@@ -98,6 +122,7 @@ public class MovieManager {
                         new String[]{String.valueOf(movie.getId())});
     }
 
+    @SuppressWarnings("unused")
     public void remove(Movie movie) {
         remove(movie.getId());
     }
@@ -105,30 +130,5 @@ public class MovieManager {
     public void remove(long id) {
         mContext.getContentResolver().delete(MovieEntry.CONTENT_URI, WHERE_ID,
                 new String[]{String.valueOf(id)});
-    }
-
-    public static Movie getMovieFromCursor(Cursor openedCursor) {
-        Movie movie = new Movie(
-                openedCursor.getLong(0),
-                openedCursor.getString(1),
-                openedCursor.getFloat(2),
-                openedCursor.getString(3),
-                openedCursor.getString(4),
-                openedCursor.getString(5),
-                openedCursor.getInt(6) > 0
-        );
-        return movie;
-    }
-
-    public static ContentValues getContentValuesFromMovie(Movie movie) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MovieEntry._ID, movie.getId());
-        contentValues.put(MovieEntry.COLUMN_TITLE, movie.getTitle());
-        contentValues.put(MovieEntry.COLUMN_POPULARITY, movie.getPopularity());
-        contentValues.put(MovieEntry.COLUMN_COVER_PATH, movie.getCoverPath());
-        contentValues.put(MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
-        contentValues.put(MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
-        contentValues.put(MovieEntry.COLUMN_FROM_DB, movie.isFromDb() ? 1 :0);
-        return contentValues;
     }
 }

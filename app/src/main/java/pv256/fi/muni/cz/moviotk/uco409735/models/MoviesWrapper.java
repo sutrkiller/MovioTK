@@ -1,8 +1,6 @@
-package pv256.fi.muni.cz.moviotk.uco409735.data;
+package pv256.fi.muni.cz.moviotk.uco409735.models;
 
 import com.google.gson.annotations.SerializedName;
-
-import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 
 
 /**
@@ -10,11 +8,11 @@ import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
  * @date 11/8/2016.
  */
 
-public class MovieDO {
+public class MoviesWrapper {
     @SerializedName("results")
     private Movie[] mResults;
 
-    public MovieDO() {
+    public MoviesWrapper() {
     }
 
     public Movie[] getResults() {

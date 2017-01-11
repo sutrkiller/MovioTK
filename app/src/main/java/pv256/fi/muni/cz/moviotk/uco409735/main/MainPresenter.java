@@ -45,7 +45,7 @@ public class MainPresenter implements MainContract.UserInteractions {
     public void onLoaderFinished(Cursor data, boolean fromDb) {
         if (data != null && fromDb) {
             MoviesStorage storage = MoviesStorage.getInstance();
-            storage.setSelectedGenres("");
+            storage.setSelectedGenres("-1");
             ArrayList<Movie> list = new ArrayList<>();
             while (data.moveToNext()) {
                 list.add(MovieManager.getMovieFromCursor(data));

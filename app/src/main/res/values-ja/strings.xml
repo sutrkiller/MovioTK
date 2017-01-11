@@ -1,10 +1,8 @@
 <resources>
     <!--<string name="app_name">MovioTK</string>-->
-    <string name="switch_theme">テーマを切り替える</string>
-    <string name="detail">詳細</string>
+    <!--<string name="switch_theme">テーマを切り替える</string>-->
     <string name="movie_backdrop_image">映画の背景画像</string>
     <string name="movie_cover_image">映画カバー画像</string>
-    <string name="search">サーチ</string>
     <string name="navigation_drawer_open">ナビゲーション・ドロワーを開く</string>
     <string name="navigation_drawer_close">クローズナビゲーションドロワー</string>
     <string name="genres">ジャンル</string>
@@ -36,6 +34,9 @@
     <string name="sync_account_type">pv256.fi.muni.cz.moviotk.uco409735.sync.account</string>
     <string name="update_db">Update db</string>
     <string name="db_net">DB/Net</string>
-    <string name="director">Director</string>
+    <string name="director">Unknown</string>
     <string name="explore_the_movies">Explore the movies</string>
+    <string name="overview">Overview</string>
+    <string name="cast">Cast</string>
+    <string name="crew_image">Cast image</string>
 </resources>

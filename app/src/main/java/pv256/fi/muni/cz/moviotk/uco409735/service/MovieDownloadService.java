@@ -3,10 +3,11 @@ package pv256.fi.muni.cz.moviotk.uco409735.service;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -18,14 +19,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
-import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDO;
+import pv256.fi.muni.cz.moviotk.uco409735.R;
 import pv256.fi.muni.cz.moviotk.uco409735.data.MovieDbApi;
 import pv256.fi.muni.cz.moviotk.uco409735.data.MoviesStorage;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
+import pv256.fi.muni.cz.moviotk.uco409735.models.CastWrapper;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
-import pv256.fi.muni.cz.moviotk.uco409735.R;
+import pv256.fi.muni.cz.moviotk.uco409735.models.MoviesWrapper;
 import retrofit2.Call;
 import retrofit2.Converter;
 import retrofit2.Response;
@@ -35,19 +38,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MovieDownloadService extends IntentService {
 
     public static final String BROADCAST_INTENT = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.broadcast_intent";
+    public static final String BROADCAST_INTENT_CAST = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.broadcast_intent_cast";
     public static final String ACTION_DOWNLOAD = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.download_movies";
-    public static final String ACTION_SINGLE = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.download_single";
-    public static final String RESULT_KEY = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.data_result";
+    public static final String ACTION_CAST = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.download_cast";
 
     private static final String EXTRA_GENRES = "pv256.fi.muni.cz.moviotk.uco409735.Services.extra.GENRES";
     private static final String EXTRA_ID = "pv256.fi.muni.cz.moviotk.uco409735.Services.extra.ID";
-    private static final String EXTRA_DOWNLOAD_KEY = "pv256.fi.muni.cz.moviotk.uco409735.Services.extra.DOWNLOAD";
 
     private Gson mGson;
-    private MovieManager mManager;
-    private Retrofit mRetrofit;
-    private MovieDbApi movieDbApi;
 
+    @SuppressWarnings("unused")
     public MovieDownloadService() {
         this("MovieDownloadService");
     }
@@ -64,11 +64,17 @@ public class MovieDownloadService extends IntentService {
      *
      * @see IntentService
      */
-    public static void startDownload(Context context, String download_key, String genres) {
+    public static void startDownload(Context context, String genres) {
         Intent intent = new Intent(context, MovieDownloadService.class);
         intent.setAction(ACTION_DOWNLOAD);
-        intent.putExtra(EXTRA_DOWNLOAD_KEY, download_key);
         intent.putExtra(EXTRA_GENRES, genres);
+        context.startService(intent);
+    }
+
+    public static void startDownloadCast(Context context, Long id) {
+        Intent intent = new Intent(context, MovieDownloadService.class);
+        intent.setAction(ACTION_CAST);
+        intent.putExtra(EXTRA_ID, id);
         context.startService(intent);
     }
 
@@ -77,21 +83,44 @@ public class MovieDownloadService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_DOWNLOAD.equals(action)) {
-                final String download_key = intent.getStringExtra(EXTRA_DOWNLOAD_KEY);
                 final String genres = intent.getStringExtra(EXTRA_GENRES);
-                handleActionDownload(download_key, genres);
+                handleActionDownload(genres);
+            } else if (ACTION_CAST.equals(action)) {
+                final Long id = intent.getLongExtra(EXTRA_ID, -1);
+                if (id > 0) handleActionCast(id);
             }
         }
+    }
+
+    private void handleActionCast(Long id) {
+        if (isNetworkConnected()) {
+            Call<CastWrapper> call = initRetrofit().loadCastAndCrew(id, MovieDbApi.API_KEY);
+
+            try {
+                Response response = call.execute();
+
+                if (response != null) {
+                    if (response.isSuccessful()) {
+                        CastWrapper cast = (CastWrapper) response.body();
+                        MoviesStorage.getInstance().putCast(cast.getId(), cast);
+                    }
+                }
+            } catch (IOException ignored) {
+
+            }
+        }
+        Intent broadcastIntent = new Intent(BROADCAST_INTENT_CAST);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(broadcastIntent);
     }
 
     /**
      * Handle action DOWNLOAD in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionDownload(String download_key, String genres) {
+    private void handleActionDownload(String genres) {
         if (isNetworkConnected()) {
             notifyDownloading();
-
+            MovieDbApi movieDbApi = initRetrofitMovies();
             MoviesStorage.getInstance().clearMap();
             MoviesStorage.getInstance().setSelectedGenres("-1");
             Calendar cal = Calendar.getInstance();
@@ -117,7 +146,14 @@ public class MovieDownloadService extends IntentService {
     }
 
     private String encodeDate(Calendar cal) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Locale locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = getResources().getConfiguration().getLocales().get(0);
+        } else {
+            //noinspection deprecation
+            locale = getResources().getConfiguration().locale;
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", locale);
         return format.format(cal.getTime());
     }
 
@@ -128,8 +164,7 @@ public class MovieDownloadService extends IntentService {
             if (response != null) {
                 if (response.isSuccessful()) {
                     Movie[] movies = (Movie[]) response.body();
-
-                    mManager = new MovieManager(this);
+                    MovieManager mManager = new MovieManager(this);
                     for (Movie mov: movies) {
                         if (mManager.contains(mov.getId())) {
                             mov.setFromDb(true);
@@ -197,16 +232,24 @@ public class MovieDownloadService extends IntentService {
     }
 
     private MovieDbApi initRetrofit() {
-        mRetrofit = new Retrofit.Builder()
+        return new Retrofit.Builder()
+                .baseUrl(MovieDbApi.URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(MovieDbApi.class);
+    }
+
+    private MovieDbApi initRetrofitMovies() {
+        return new Retrofit.Builder()
                 .baseUrl(MovieDbApi.URL)
                 .addConverterFactory(new Converter.Factory() {
                     @Override
-                    public Converter<ResponseBody, ?> responseBodyConverter(Type type, java.lang.annotation.Annotation[] annotations, Retrofit retrofit) {
+                    public Converter<ResponseBody, Movie[]> responseBodyConverter(Type type, java.lang.annotation.Annotation[] annotations, Retrofit retrofit) {
 
                             return new Converter<ResponseBody, Movie[]>() {
                                 @Override
                                 public Movie[] convert(ResponseBody value) throws IOException {
-                                    MovieDO resultWrapper = mGson.fromJson(value.charStream(), MovieDO.class);
+                                    MoviesWrapper resultWrapper = mGson.fromJson(value.charStream(), MoviesWrapper.class);
                                     value.close();
                                     return resultWrapper.getResults();
                                 }
@@ -214,10 +257,8 @@ public class MovieDownloadService extends IntentService {
                     }
                 })
                 .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        movieDbApi = mRetrofit.create(MovieDbApi.class);
-        return movieDbApi;
+                .build()
+                .create(MovieDbApi.class);
     }
 
 

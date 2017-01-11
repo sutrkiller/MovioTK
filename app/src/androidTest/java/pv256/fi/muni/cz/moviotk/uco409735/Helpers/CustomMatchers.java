@@ -20,9 +20,10 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 /**
- * Created by Tobias on 1/6/2017.
+ * Helps with comparing drawables in android tests
  */
 
+@SuppressWarnings("unused")
 public class CustomMatchers {
     public static Matcher<View> withBackground(final int resourceId) {
         return new TypeSafeMatcher<View>() {
@@ -103,20 +104,11 @@ public class CustomMatchers {
             Bitmap otherBitmap = ((BitmapDrawable) otherDrawable).getBitmap();
             return bitmap.sameAs(otherBitmap);
         }
+        //noinspection SimplifiableIfStatement
         if (drawable instanceof VectorDrawable) {
-            return drawable.getConstantState().equals(otherDrawable.getConstantState());
+            return !(drawable.getConstantState() == null || otherDrawable.getConstantState() == null) && drawable.getConstantState().equals(otherDrawable.getConstantState());
         }
         return false;
     }
 
-    public static Bitmap getBitmapFromVectorDrawable(Drawable drawable) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            drawable = (DrawableCompat.wrap(drawable)).mutate();
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-
-        return bitmap;
-    }
 }

@@ -10,8 +10,20 @@ import com.google.gson.annotations.SerializedName;
  * @author Tobias <tobias.kamenicky@gmail.com>
  */
 
+@SuppressWarnings("unused")
 public class Movie implements Parcelable {
 
+    public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
     @SerializedName("id")
     private long mId;
     @SerializedName("release_date")
@@ -24,19 +36,18 @@ public class Movie implements Parcelable {
     private String mBackdropPath;
     @SerializedName("vote_average")
     private float mPopularity;
+    @SerializedName("overview")
+    private String mOverview;
     private transient boolean mFromDb;
 
-    //TODO: temporary until url is given
-    //private int mBackdropId;
-    //private int mCoverId;
-
-    public Movie(long id, String title, float popularity, String coverPath, String backdrop, String releaseDate, boolean fromDb ) {
+    public Movie(long id, String title, float popularity, String coverPath, String backdrop, String releaseDate, String overview, boolean fromDb) {
         mId = id;
         mBackdropPath = backdrop;
         mCoverPath = coverPath;
         mPopularity = popularity;
         mReleaseDate = releaseDate;
         mTitle = title;
+        mOverview = overview;
         mFromDb = fromDb;
     }
 
@@ -47,6 +58,7 @@ public class Movie implements Parcelable {
         mTitle = in.readString();
         mBackdropPath = in.readString();
         mPopularity = in.readFloat();
+        mOverview = in.readString();
         mFromDb = in.readInt() > 0;
     }
 
@@ -111,21 +123,9 @@ public class Movie implements Parcelable {
         dest.writeString(mTitle);
         dest.writeString(mBackdropPath);
         dest.writeFloat(mPopularity);
+        dest.writeString(mOverview);
         dest.writeInt(mFromDb ? 1 : 0);
     }
-
-    public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {
-        @Override
-        public Movie createFromParcel(Parcel source) {
-            return new Movie(source);
-        }
-
-        @Override
-        public Movie[] newArray(int size) {
-            return new Movie[size];
-        }
-    };
-
 
     public boolean isFromDb() {
         return mFromDb;
@@ -135,6 +135,7 @@ public class Movie implements Parcelable {
         this.mFromDb = mFromDb;
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -149,7 +150,7 @@ public class Movie implements Parcelable {
         if (mCoverPath != null ? !mCoverPath.equals(movie.mCoverPath) : movie.mCoverPath != null)
             return false;
         if (!mTitle.equals(movie.mTitle)) return false;
-        return mBackdropPath != null ? mBackdropPath.equals(movie.mBackdropPath) : movie.mBackdropPath == null;
+        return mOverview.equals(movie.mOverview) && (mBackdropPath != null ? mBackdropPath.equals(movie.mBackdropPath) : movie.mBackdropPath == null);
 
     }
 
@@ -159,9 +160,18 @@ public class Movie implements Parcelable {
         result = 31 * result + mReleaseDate.hashCode();
         result = 31 * result + (mCoverPath != null ? mCoverPath.hashCode() : 0);
         result = 31 * result + mTitle.hashCode();
+        result = 31 * result + mOverview.hashCode();
         result = 31 * result + (mBackdropPath != null ? mBackdropPath.hashCode() : 0);
         result = 31 * result + (mPopularity != +0.0f ? Float.floatToIntBits(mPopularity) : 0);
         result = 31 * result + (mFromDb ? 1 : 0);
         return result;
+    }
+
+    public String getOverview() {
+        return mOverview;
+    }
+
+    public void setOverview(String mOverview) {
+        this.mOverview = mOverview;
     }
 }

@@ -1,6 +1,5 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -27,7 +26,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -104,7 +102,7 @@ public class MainPresenterTest {
 
     @Test
     public void testOnLoaderFinished_true() throws Exception {
-        Movie movie = new Movie(1,"Title",1,"coverPath","backdropPath","2017-1-1",true);
+        Movie movie = new Movie(1, "Title", 1, "coverPath", "backdropPath", "2017-1-1", "Overview 1", true);
 
         when(MoviesStorage.getInstance()).thenReturn(storage);
         doNothing().when(storage).setSelectedGenres(any(String.class));

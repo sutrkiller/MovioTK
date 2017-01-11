@@ -3,22 +3,22 @@ package pv256.fi.muni.cz.moviotk.uco409735;
 import android.animation.ValueAnimator;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +28,7 @@ import android.widget.Switch;
 
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 import pv256.fi.muni.cz.moviotk.uco409735.main.MainContract;
 import pv256.fi.muni.cz.moviotk.uco409735.main.MainPresenter;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
@@ -40,18 +41,19 @@ import pv256.fi.muni.cz.moviotk.uco409735.sync.UpdaterSyncAdapter;
  */
 public class MainActivity extends AppCompatActivity implements MainFragment.OnMovieSelectedListener, NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>, MainContract.View {
 
-    private SharedPreferences mPrefs;
-    public static final String PREF_THEME = "PREF_THEME";
+    //public static final String PREF_THEME = "PREF_THEME";
     public static final String SELECTED_GENRES = "SELECTED_GENRES";
     public static final String SELECTED_SOURCE = "SELECTED_SOURCE";
     public static final String APP_NAME = "MovioTK";
     //private int mCurrentTheme;
-    private boolean mTwoPane;
+    public static boolean mTwoPane;
+    private SharedPreferences mPrefs;
     private MainContract.UserInteractions mPresenter;
 
     private boolean mSource;
     private ActionBarDrawerToggle mToggle;
     private FragmentManager.OnBackStackChangedListener mOnBackStackChangedListener;
+    private String[] mGenres = {"28", "12", "16", "35", "80", "99", "18", "10751", "14", "36", "27", "10402", "9648", "10749", "878", "10770", "53", "10752", "37"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         //mCurrentTheme = mPrefs.getInt(PREF_THEME, R.style.Theme_NoActionBar);
         //setTheme(mCurrentTheme);
 
-        getLoaderManager().initLoader(1, null, this);
+
         UpdaterSyncAdapter.initializeSyncAdapter(this);
 
         setUpContentView(savedInstanceState);
@@ -81,17 +83,22 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         prepareNavigationDrawer();
         restoreSelectedGenres();
         mSource = mPrefs.getBoolean(SELECTED_SOURCE, false);
+        //if(mSource && savedInstanceState == null) {
+        getLoaderManager().initLoader(1, null, this);
+        // }
+        // else {
         reloadMovies(mSource);
+        //  }
+
     }
 
     public void reloadMovies(boolean fromDb) {
+        if (getSupportFragmentManager().findFragmentByTag(DetailFragment.TAG) != null) return;
         MainFragment fr = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
         if (fr == null) return;
         View view = fr.getView();
         fr.loadMovies(view, getSelectedGenres(), fromDb);
     }
-
-    private String[] mGenres = {"28", "12", "16", "35", "80", "99", "18", "10751", "14", "36", "27", "10402", "9648", "10749", "878", "10770", "53", "10752", "37"};
 
     private String getSelectedGenres() {
         NavigationView view = (NavigationView) findViewById(R.id.nav_view);
@@ -120,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
                 getSupportFragmentManager().beginTransaction().replace(R.id.movie_detail_container, f, DetailFragment.TAG).commit();
             } else {
                 getSupportFragmentManager().executePendingTransactions();
-                getSupportFragmentManager().beginTransaction().add(R.id.fragment_main, f, MainFragment.TAG).addToBackStack(null).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_main, f, DetailFragment.TAG).addToBackStack(null).commit();
             }
         } else {
             setContentView(R.layout.activity_main);
@@ -228,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         mToggle.onConfigurationChanged(newConfig);
+        getLoaderManager().destroyLoader(1);
         super.onConfigurationChanged(newConfig);
     }
 
@@ -245,7 +253,14 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     }
 
     public void restartLoader() {
-        getLoaderManager().restartLoader(1, null, MainActivity.this);
+        LoaderManager lm = getLoaderManager();
+        Loader lo = lm.getLoader(1);
+
+        if (lo != null) {
+            lm.restartLoader(1, null, MainActivity.this);
+        } else {
+            lm.initLoader(1, null, MainActivity.this);
+        }
     }
 
     @Override
@@ -259,6 +274,13 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         sourceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (mTwoPane) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    DetailFragment fr = (DetailFragment) fm.findFragmentByTag(DetailFragment.TAG);
+                    if (fr != null) {
+                        fm.beginTransaction().remove(fr).commitNow();
+                    }
+                }
                 mSource = isChecked;
                 mPresenter.onDbSourceCheckedChange(isChecked);
             }
@@ -322,12 +344,15 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         FragmentManager fm = getSupportFragmentManager();
         DetailFragment fragment = DetailFragment.newInstance(movie);
         if (mTwoPane) {
+            NestedScrollView view = (NestedScrollView) findViewById(R.id.movie_detail_container);
+            view.removeAllViews();
             fm.beginTransaction()
                     .replace(R.id.movie_detail_container, fragment, DetailFragment.TAG)
+                    //.addToBackStack(null)
                     .commit();
         } else {
             fm.beginTransaction()
-                    .add(R.id.fragment_main, fragment, DetailFragment.TAG)
+                    .replace(R.id.fragment_main, fragment, DetailFragment.TAG)
                     .addToBackStack(null)
                     .commit();
         }
@@ -341,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         item.setChecked(!item.isChecked());
         return false;
     }

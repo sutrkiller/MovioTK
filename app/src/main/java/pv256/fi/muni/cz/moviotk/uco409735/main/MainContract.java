@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 /**
- * Created by Tobias on 1/5/2017.
+ * MVP interface for MainActivity
  */
 
 public interface MainContract {

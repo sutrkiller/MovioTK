@@ -1,10 +1,8 @@
 <resources>
     <!--<string name="app_name">MovioTK</string>-->
-    <string name="switch_theme">Switch Theme</string>
-    <string name="detail">Detail</string>
+    <!--<string name="switch_theme">Switch Theme</string>-->
     <string name="movie_backdrop_image">Movie backdrop image</string>
     <string name="movie_cover_image">Movie cover image</string>
-    <string name="search">Search</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="genres">Genres</string>
@@ -36,6 +34,9 @@
     <string name="sync_account_type">pv256.fi.muni.cz.moviotk.uco409735.sync.account</string>
     <string name="update_db">Update db</string>
     <string name="db_net">DB/Net</string>
-    <string name="director">Director</string>
+    <string name="director">Unknown</string>
     <string name="explore_the_movies">Explore the movies</string>
+    <string name="overview">Overview</string>
+    <string name="cast">Cast</string>
+    <string name="crew_image">Cast image</string>
 </resources>

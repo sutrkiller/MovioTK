@@ -1,13 +1,11 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
-import android.os.Bundle;
 import android.util.Log;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -17,9 +15,11 @@ import pv256.fi.muni.cz.moviotk.uco409735.detail.DetailContract;
 import pv256.fi.muni.cz.moviotk.uco409735.detail.DetailPresenter;
 import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(android.util.Log.class)
@@ -33,8 +33,8 @@ public class DetailPresenterTest {
     private DetailPresenter detailPresenterInDb;
     private DetailPresenter detailPresenterInvalid;
 
-    private Movie movieNotInDb = new Movie(1,"Title",1,"coverPath","backdropPath","2017-1-1",false);
-    private Movie movieInDb = new Movie(2,"Title",1,"coverPath","backdropPath","2017-1-1",true);
+    private Movie movieNotInDb = new Movie(1, "Title", 1, "coverPath", "backdropPath", "2017-1-1", "Overview", false);
+    private Movie movieInDb = new Movie(2, "Title", 1, "coverPath", "backdropPath", "2017-1-1", "Overview 1", true);
     private Movie movieInvalid = null;
 
     @Before
