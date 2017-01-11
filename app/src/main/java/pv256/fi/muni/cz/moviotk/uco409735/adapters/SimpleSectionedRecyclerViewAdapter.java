@@ -55,17 +55,6 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
         });
     }
 
-
-    private static class SectionViewHolder extends RecyclerView.ViewHolder {
-
-        public TextView title;
-
-        SectionViewHolder(View view, int mTextResourceId) {
-            super(view);
-            title = (TextView) view.findViewById(mTextResourceId);
-        }
-    }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int typeView) {
         if (typeView == SECTION_TYPE) {
@@ -81,6 +70,7 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
         if (isSectionHeaderPosition(position)) {
             ((SectionViewHolder)sectionViewHolder).title.setText(mSections.get(position).title);
         }else{
+            //noinspection unchecked
             mBaseAdapter.onBindViewHolder(sectionViewHolder,sectionedPositionToPosition(position));
         }
 
@@ -92,23 +82,6 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
                 ? SECTION_TYPE
                 : mBaseAdapter.getItemViewType(sectionedPositionToPosition(position)) +1 ;
     }
-
-
-    public static class Section {
-        int firstPosition;
-        int sectionedPosition;
-        CharSequence title;
-
-        public Section(int firstPosition, CharSequence title) {
-            this.firstPosition = firstPosition;
-            this.title = title;
-        }
-
-        public CharSequence getTitle() {
-            return title;
-        }
-    }
-
 
     public void setSections(Section[] sections) {
         mSections.clear();
@@ -132,6 +105,7 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
         notifyDataSetChanged();
     }
 
+    @SuppressWarnings("unused")
     public int positionToSectionedPosition(int position) {
         int offset = 0;
         for (int i = 0; i < mSections.size(); i++) {
@@ -162,7 +136,6 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
         return mSections.get(position) != null;
     }
 
-
     @Override
     public long getItemId(int position) {
         return isSectionHeaderPosition(position)
@@ -173,6 +146,31 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
     @Override
     public int getItemCount() {
         return (mValid ? mBaseAdapter.getItemCount() + mSections.size() : 0);
+    }
+
+    private static class SectionViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView title;
+
+        SectionViewHolder(View view, int mTextResourceId) {
+            super(view);
+            title = (TextView) view.findViewById(mTextResourceId);
+        }
+    }
+
+    public static class Section {
+        int firstPosition;
+        int sectionedPosition;
+        CharSequence title;
+
+        public Section(int firstPosition, CharSequence title) {
+            this.firstPosition = firstPosition;
+            this.title = title;
+        }
+
+        public CharSequence getTitle() {
+            return title;
+        }
     }
 
 }

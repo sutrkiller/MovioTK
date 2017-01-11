@@ -4,18 +4,15 @@ import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.NetworkErrorException;
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.IBinder;
 
 /**
- * Created by Tobias on 1/4/2017.
+ * Fake authenticator for syncing db periodically
  */
 
-public class UpdaterAuthenticator extends AbstractAccountAuthenticator {
-    public UpdaterAuthenticator(Context context) {
+class UpdaterAuthenticator extends AbstractAccountAuthenticator {
+    UpdaterAuthenticator(Context context) {
         super(context);
     }
 

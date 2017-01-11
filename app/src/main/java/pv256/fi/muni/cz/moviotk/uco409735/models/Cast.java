@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
  * Model for cast
  */
 
+@SuppressWarnings("unused")
 public class Cast implements Parcelable {
     public static final Parcelable.Creator<Cast> CREATOR = new Parcelable.Creator<Cast>() {
         @Override

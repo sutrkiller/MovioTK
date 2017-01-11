@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
  * Model for crew
  */
 
+@SuppressWarnings("unused")
 public class Crew implements Parcelable {
     public static final Creator<Crew> CREATOR = new Creator<Crew>() {
         @Override

@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 /**
- * Created by Tobias on 1/4/2017.
+ * Service to create updater.
  */
 
 public class UpdaterSyncService extends Service {

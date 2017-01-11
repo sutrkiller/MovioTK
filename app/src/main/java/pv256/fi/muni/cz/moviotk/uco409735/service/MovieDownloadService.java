@@ -40,15 +40,14 @@ public class MovieDownloadService extends IntentService {
     public static final String BROADCAST_INTENT = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.broadcast_intent";
     public static final String BROADCAST_INTENT_CAST = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.broadcast_intent_cast";
     public static final String ACTION_DOWNLOAD = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.download_movies";
-    public static final String ACTION_SINGLE = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.download_single";
     public static final String ACTION_CAST = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.download_cast";
-    public static final String RESULT_KEY = "pv256.fi.muni.cz.moviotk.uco409735.Services.action.data_result";
 
     private static final String EXTRA_GENRES = "pv256.fi.muni.cz.moviotk.uco409735.Services.extra.GENRES";
     private static final String EXTRA_ID = "pv256.fi.muni.cz.moviotk.uco409735.Services.extra.ID";
 
     private Gson mGson;
 
+    @SuppressWarnings("unused")
     public MovieDownloadService() {
         this("MovieDownloadService");
     }

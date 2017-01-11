@@ -14,6 +14,12 @@ public class CastWrapper {
     @SerializedName("crew")
     private Crew[] mCrew;
 
+    public CastWrapper(long mId, Cast[] mCast, Crew[] mCrew) {
+        this.mId = mId;
+        this.mCast = mCast;
+        this.mCrew = mCrew;
+    }
+
     public long getId() {
         return mId;
     }

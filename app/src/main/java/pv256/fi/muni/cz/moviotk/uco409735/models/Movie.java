@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Tobias <tobias.kamenicky@gmail.com>
  */
 
+@SuppressWarnings("unused")
 public class Movie implements Parcelable {
 
     public static final Parcelable.Creator<Movie> CREATOR = new Creator<Movie>() {

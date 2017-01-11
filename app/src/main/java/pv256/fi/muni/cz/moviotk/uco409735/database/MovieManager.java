@@ -122,6 +122,7 @@ public class MovieManager {
                         new String[]{String.valueOf(movie.getId())});
     }
 
+    @SuppressWarnings("unused")
     public void remove(Movie movie) {
         remove(movie.getId());
     }

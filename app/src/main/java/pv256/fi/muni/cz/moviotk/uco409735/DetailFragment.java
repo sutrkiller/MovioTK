@@ -179,8 +179,11 @@ public class DetailFragment extends Fragment implements DetailContract.View {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        MenuItem item = menu.findItem(R.id.action_switch_source);
-        item.setVisible(false);
+        if (!MainActivity.mTwoPane) {
+            MenuItem item = menu.findItem(R.id.action_switch_source);
+            item.setVisible(false);
+        }
+
     }
 
     private void setImage(final ImageView imageView, final ProgressBar loader, String path, int placeHolderId, int errorId) {

@@ -9,23 +9,21 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 
 import java.util.Arrays;
+
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract.MovieEntry;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 
 /**
- * Created by Tobias on 12/29/2016.
+ * Database provider implementation
  */
 
 public class MovieProvider extends ContentProvider {
-    private static final String TAG = MovieProvider.class.getName();
-
-    private static final UriMatcher sUriMatcher = buildUriMatcher();
-
     public static final int MOVIES = 100;
     public static final int MOVIE_ID = 101;
-
+    private static final String TAG = MovieProvider.class.getName();
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
     private Context mContext;
     private MovioDbHelper mDBHelper;
 

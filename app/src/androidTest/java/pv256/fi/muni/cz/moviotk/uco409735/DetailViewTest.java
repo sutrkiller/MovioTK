@@ -32,7 +32,7 @@ public class DetailViewTest {
 
     @Before
     public void init() {
-        MainActivity mainActivity = rule.getActivity();
+        @SuppressWarnings("unused") MainActivity mainActivity = rule.getActivity();
     }
 
     @Test
