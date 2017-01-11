@@ -1,12 +1,9 @@
 package pv256.fi.muni.cz.moviotk.uco409735;
 
-import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
-import android.media.midi.MidiOutputPort;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,9 +23,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import pv256.fi.muni.cz.moviotk.uco409735.Adapters.MovieRecyclerViewAdapter;
-import pv256.fi.muni.cz.moviotk.uco409735.Adapters.SimpleSectionedRecyclerViewAdapter;
-import pv256.fi.muni.cz.moviotk.uco409735.Data.MoviesStorage;
+import pv256.fi.muni.cz.moviotk.uco409735.adapters.MovieRecyclerViewAdapter;
+import pv256.fi.muni.cz.moviotk.uco409735.adapters.SimpleSectionedRecyclerViewAdapter;
+import pv256.fi.muni.cz.moviotk.uco409735.data.MoviesStorage;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
+import pv256.fi.muni.cz.moviotk.uco409735.moviesList.ListContract;
+import pv256.fi.muni.cz.moviotk.uco409735.moviesList.ListPresenter;
 import pv256.fi.muni.cz.moviotk.uco409735.service.MovieDownloadService;
 
 /**
@@ -36,7 +36,7 @@ import pv256.fi.muni.cz.moviotk.uco409735.service.MovieDownloadService;
  * @author Tobias <tobias.kamenicky@gmail.com>
  */
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements ListContract.View {
     public static final String TAG = MainFragment.class.getSimpleName();
     private static final String SELECTED_KEY = "selected_position";
 
@@ -44,7 +44,7 @@ public class MainFragment extends Fragment {
     private OnMovieSelectedListener mListener;
     private Context mContext;
     private RecyclerView mRecyclerView;
-    private BroadcastReceiver mBroadcastReceiver;
+    private ListContract.UserInteractions mPresenter;
 
     @Override
     public void onAttach(Context context) {
@@ -69,6 +69,8 @@ public class MainFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.i(MainFragment.class.getName(),"onCreate");
         mContext = getActivity().getApplicationContext();
+
+        mPresenter = new ListPresenter(this);
     }
 
     @Nullable
@@ -87,8 +89,7 @@ public class MainFragment extends Fragment {
                 mRecyclerView.smoothScrollToPosition(adapter.positionToSectionedPosition(mPosition));
             }
         }
-
-        mBroadcastReceiver = new BroadcastReceiver() {
+        BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 fillRecyclerView(view, MoviesStorage.getInstance().getMovieMap());
@@ -102,6 +103,7 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onStart() {
+        Log.i(MainFragment.class.getName(),"onStart()");
         super.onStart();
     }
 
@@ -134,7 +136,6 @@ public class MainFragment extends Fragment {
             if (inflated == null)inflated = viewStubEmpty.inflate();
             TextView textView = (TextView) inflated.findViewById(R.id.recyclerView_movies_empty_text);
             String text = isNetworkConnected() ? "No movies available." : "Internet connection not available";
-
 
             textView.setText(text);
             inflated.setVisibility(View.VISIBLE);
@@ -185,23 +186,12 @@ public class MainFragment extends Fragment {
     }
 
     public void loadMovies(View view, String genres, boolean source) {
-        MoviesStorage storage = MoviesStorage.getInstance();
-        if (!source) {
-            if (!storage.isMapEmpty() && genres.equals(storage.getSelectedGenres())) {
-                fillRecyclerView(view, storage.getMovieMap());
-            } else {
-                MovieDownloadService.startDownload(getActivity(),MovieDownloadService.RESULT_KEY,genres);
-            }
-        } else {
-
-                fillRecyclerView(view, storage.getMovieMap());
-
-        }
-
+        mPresenter.loadMovies(view,genres,source);
     }
 
     @Override
     public void onStop() {
+        Log.i(MainFragment.class.getName(),"onStop()");
         super.onStop();
     }
 

@@ -9,7 +9,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract.MovieEntry;
-import pv256.fi.muni.cz.moviotk.uco409735.Movie;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 
 /**
  * Created by Tobias on 12/29/2016.

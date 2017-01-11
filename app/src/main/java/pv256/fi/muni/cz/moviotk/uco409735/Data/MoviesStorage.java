@@ -1,4 +1,4 @@
-package pv256.fi.muni.cz.moviotk.uco409735.Data;
+package pv256.fi.muni.cz.moviotk.uco409735.data;
 
 import android.util.Log;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import pv256.fi.muni.cz.moviotk.uco409735.Movie;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 
 /**
  * @author Tobias Kamenicky <tobias.kamenicky@gmail.com>

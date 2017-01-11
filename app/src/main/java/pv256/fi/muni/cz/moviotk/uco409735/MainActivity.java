@@ -26,11 +26,11 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import java.util.ArrayList;
-
-import pv256.fi.muni.cz.moviotk.uco409735.Data.MoviesStorage;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract;
+import pv256.fi.muni.cz.moviotk.uco409735.main.MainContract;
+import pv256.fi.muni.cz.moviotk.uco409735.main.MainPresenter;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 import pv256.fi.muni.cz.moviotk.uco409735.sync.UpdaterSyncAdapter;
 
 /**
@@ -38,7 +38,7 @@ import pv256.fi.muni.cz.moviotk.uco409735.sync.UpdaterSyncAdapter;
  *
  * @author Tobias Kamenicky <tobias.kamenicky@gmail.com>
  */
-public class MainActivity extends AppCompatActivity implements MainFragment.OnMovieSelectedListener, NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity implements MainFragment.OnMovieSelectedListener, NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>, MainContract.View {
 
     private SharedPreferences mPrefs;
     public static final String PREF_THEME = "PREF_THEME";
@@ -47,20 +47,24 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     public static final String APP_NAME = "MovioTK";
     private int mCurrentTheme;
     private boolean mTwoPane;
+    private MainContract.UserInteractions mPresenter;
+
     private boolean mSource;
     private ActionBarDrawerToggle mToggle;
     private FragmentManager.OnBackStackChangedListener mOnBackStackChangedListener;
-    private Switch mSourceSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(MainActivity.class.getName(), "onCreate");
+
+        mPresenter = new MainPresenter(this);
+
         mPrefs = getSharedPreferences(APP_NAME, MODE_PRIVATE);
         mCurrentTheme = mPrefs.getInt(PREF_THEME, R.style.Theme_NoActionBar);
         setTheme(mCurrentTheme);
 
-        getLoaderManager().initLoader(1,null,this);
+        getLoaderManager().initLoader(1, null, this);
         UpdaterSyncAdapter.initializeSyncAdapter(this);
 
         setUpContentView(savedInstanceState);
@@ -76,19 +80,17 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
 
         prepareNavigationDrawer();
         restoreSelectedGenres();
-        mSource = mPrefs.getBoolean(SELECTED_SOURCE,false);
-        reloadMovies();
-        UpdaterSyncAdapter.syncImmediately(this);
+        mSource = mPrefs.getBoolean(SELECTED_SOURCE, false);
+        reloadMovies(mSource);
     }
 
-    private void reloadMovies() {
+    public void reloadMovies(boolean fromDb) {
         MainFragment fr = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main);
         if (fr == null) return;
         View view = fr.getView();
-        fr.loadMovies(view, getSelectedGenres(),mSource);
+        fr.loadMovies(view, getSelectedGenres(), fromDb);
     }
 
-    //TODO: maybe dynamically populate menu somehow?
     private String[] mGenres = {"28", "12", "16", "35", "80", "99", "18", "10751", "14", "36", "27", "10402", "9648", "10749", "878", "10770", "53", "10752", "37"};
 
     private String getSelectedGenres() {
@@ -121,29 +123,22 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
                 getSupportFragmentManager().beginTransaction().add(R.id.fragment_main, f, MainFragment.TAG).addToBackStack(null).commit();
             }
         } else {
-//            int count =getSupportFragmentManager().getBackStackEntryCount();
-//            getSupportFragmentManager().executePendingTransactions();
-//            if (getSupportFragmentManager().findFragmentByTag(MainFragment.TAG) == null) {
-//                getSupportFragmentManager().beginTransaction().add(R.id.fragment_main,new MainFragment(),MainFragment.TAG).commit();
-//            }
-
             setContentView(R.layout.activity_main);
-
         }
     }
 
     private void restoreSelectedGenres() {
         String genres = mPrefs.getString(SELECTED_GENRES, "");
 
-        String[] splitted = genres.split(";");
+        String[] split = genres.split(";");
 
         NavigationView view = (NavigationView) findViewById(R.id.nav_view);
         Menu menu = view.getMenu().findItem(R.id.nav_genres).getSubMenu();
 
-        if (splitted.length != menu.size()) return;
-        for (int i = 0; i < splitted.length; ++i) {
+        if (split.length != menu.size()) return;
+        for (int i = 0; i < split.length; ++i) {
             MenuItem item = menu.getItem(i);
-            item.setChecked(splitted[i].equals("1"));
+            item.setChecked(split[i].equals("1"));
         }
     }
 
@@ -166,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
                 super.onDrawerClosed(drawerView);
                 invalidateOptionsMenu();
                 syncState();
-                reloadMovies();
+                reloadMovies(mSource);
             }
 
             @Override
@@ -238,35 +233,36 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
 
     @Override
     protected void onResume() {
+        Log.i(MainActivity.class.getName(), "onResume");
         super.onResume();
         int newTheme = mPrefs.getInt(PREF_THEME, R.style.Theme_NoActionBar);
         if (newTheme != mCurrentTheme) switchThemeOnClick(null);
-        Log.i(MainActivity.class.getName(), "onResume");
+
+    }
+
+    public void showMessage(String text) {
+        Snackbar.make(findViewById(R.id.activity_main_frame_layout), text, Snackbar.LENGTH_SHORT).show();
+    }
+
+    public void restartLoader() {
+        getLoaderManager().restartLoader(1, null, MainActivity.this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        mSourceSwitch = (Switch) menu.findItem(R.id.action_switch_source).getActionView().findViewById(R.id.switchForActionBar);
-        mSourceSwitch.setChecked(mSource);
-
-        if (mSourceSwitch != null) {
-            mSourceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                    mSource = isChecked;
-                    MoviesStorage.getInstance().clearMap();
-                    Snackbar.make(mSourceSwitch, "Source changed to " + (mSource ? "Database" : "Internet"), Snackbar.LENGTH_SHORT).show();
-                    if (!isChecked) {
-                        reloadMovies();
-                    } else {
-                        getLoaderManager().restartLoader(1,null,MainActivity.this);
-                    }
-                }
-            });
-        }
-
         Log.i(MainActivity.class.getName(), "onCreateOptionsMenu");
+
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        Switch sourceSwitch = (Switch) menu.findItem(R.id.action_switch_source).getActionView().findViewById(R.id.switchForActionBar);
+        sourceSwitch.setChecked(mSource);
+
+        sourceSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                mSource = isChecked;
+                mPresenter.onDbSourceCheckedChange(isChecked);
+            }
+        });
         return true;
     }
 
@@ -281,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         super.onPause();
         Log.i(MainActivity.class.getName(), "onPause");
         saveSelectedGenres();
-        mPrefs.edit().putBoolean(SELECTED_SOURCE,mSource).apply();
+        mPrefs.edit().putBoolean(SELECTED_SOURCE, mSource).apply();
     }
 
     @Override
@@ -306,13 +302,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
                 switchThemeOnClick(null);
                 return true;
             case R.id.action_update_db:
-                Snackbar.make(findViewById(R.id.action_update_db),"Checking updates...",Snackbar.LENGTH_SHORT).show();
-                UpdaterSyncAdapter.syncImmediately(this);
-                if (mSource) {
-                    getLoaderManager().restartLoader(1,null,MainActivity.this);
-                }
-                Snackbar.make(findViewById(R.id.action_update_db),"Updating finished",Snackbar.LENGTH_SHORT).show();
-
+                mPresenter.updateDb(this, mSource);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -357,27 +347,16 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     }
 
     @Override
-    public Loader onCreateLoader(int i, Bundle bundle) {
-        return new CursorLoader(this, MovioContract.MovieEntry.CONTENT_URI, MovieManager.MOVIE_COLS,null,null,MovioContract.MovieEntry.COLUMN_RELEASE_DATE + " ASC");
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        return new CursorLoader(this, MovioContract.MovieEntry.CONTENT_URI, MovieManager.MOVIE_COLS, null, null, MovioContract.MovieEntry.COLUMN_RELEASE_DATE + " ASC");
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data != null && mSource) {
-            MoviesStorage storage = MoviesStorage.getInstance();
-            storage.setSelectedGenres("");
-            ArrayList<Movie> list = new ArrayList<>();
-            while (data.moveToNext()) {
-                list.add(MovieManager.getMovieFromCursor(data));
-            }
-            data.close();
-            storage.addMovieCategory("Favorites",list);
-            reloadMovies();
-        }
+        mPresenter.onLoaderFinished(data, mSource);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 }

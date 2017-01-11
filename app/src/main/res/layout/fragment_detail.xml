@@ -13,21 +13,21 @@
 
         <include layout="@layout/detail_top_layout"/>
 
-        <TextView
-            android:id="@+id/detail_movie"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:textColor="@color/textColorPrimary"
-            android:textSize="12pt" />
+        <!--<TextView-->
+            <!--android:id="@+id/detail_movie"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textAppearance="?android:textAppearanceLarge"-->
+            <!--android:textColor="@color/textColorPrimary"-->
+            <!--android:textSize="12pt" />-->
 
-        <TextView
-            android:id="@+id/detail_movie_low"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:textAppearanceLarge"
-            android:textColor="@color/textColorPrimary"
-            android:textSize="8pt" />
+        <!--<TextView-->
+            <!--android:id="@+id/detail_movie_low"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textAppearance="?android:textAppearanceLarge"-->
+            <!--android:textColor="@color/textColorPrimary"-->
+            <!--android:textSize="8pt" />-->
     </LinearLayout>
 
 </ScrollView>

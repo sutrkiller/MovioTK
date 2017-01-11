@@ -4,6 +4,7 @@ import android.test.AndroidTestCase;
 
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovieManager;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract;
+import pv256.fi.muni.cz.moviotk.uco409735.models.Movie;
 
 public class MovioDatabaseTest extends AndroidTestCase {
     private MovieManager mManager;
