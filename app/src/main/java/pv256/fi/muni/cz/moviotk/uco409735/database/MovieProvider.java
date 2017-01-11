@@ -9,7 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 
 import java.util.Arrays;
 import pv256.fi.muni.cz.moviotk.uco409735.database.MovioContract.MovieEntry;

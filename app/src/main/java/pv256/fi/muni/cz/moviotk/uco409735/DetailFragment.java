@@ -12,7 +12,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
-import android.util.Log;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;

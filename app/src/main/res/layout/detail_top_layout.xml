@@ -93,7 +93,7 @@
         android:layout_marginTop="8dp"
         android:maxLines="1"
         android:maxWidth="140dp"
-        android:text="Director of movie"
+        android:text="@string/director"
         android:textColor="@color/colorWhite"
         android:textSize="16sp"/>
 

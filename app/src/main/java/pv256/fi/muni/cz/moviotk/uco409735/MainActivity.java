@@ -18,7 +18,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     public static final String SELECTED_GENRES = "SELECTED_GENRES";
     public static final String SELECTED_SOURCE = "SELECTED_SOURCE";
     public static final String APP_NAME = "MovioTK";
-    private int mCurrentTheme;
+    //private int mCurrentTheme;
     private boolean mTwoPane;
     private MainContract.UserInteractions mPresenter;
 
@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
         mPresenter = new MainPresenter(this);
 
         mPrefs = getSharedPreferences(APP_NAME, MODE_PRIVATE);
-        mCurrentTheme = mPrefs.getInt(PREF_THEME, R.style.Theme_NoActionBar);
-        setTheme(mCurrentTheme);
+        //mCurrentTheme = mPrefs.getInt(PREF_THEME, R.style.Theme_NoActionBar);
+        //setTheme(mCurrentTheme);
 
         getLoaderManager().initLoader(1, null, this);
         UpdaterSyncAdapter.initializeSyncAdapter(this);
@@ -235,8 +235,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     protected void onResume() {
         Log.i(MainActivity.class.getName(), "onResume");
         super.onResume();
-        int newTheme = mPrefs.getInt(PREF_THEME, R.style.Theme_NoActionBar);
-        if (newTheme != mCurrentTheme) switchThemeOnClick(null);
+        //int newTheme = mPrefs.getInt(PREF_THEME, R.style.Theme_NoActionBar);
+        //if (newTheme != mCurrentTheme) switchThemeOnClick(null);
 
     }
 
@@ -298,9 +298,9 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
             case android.R.id.home:
                 getSupportFragmentManager().popBackStackImmediate();
                 return true;
-            case R.id.action_switch_theme:
-                switchThemeOnClick(null);
-                return true;
+//            case R.id.action_switch_theme:
+//                switchThemeOnClick(null);
+//                return true;
             case R.id.action_update_db:
                 mPresenter.updateDb(this, mSource);
         }
@@ -308,14 +308,14 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnMo
     }
 
 
-    public void switchThemeOnClick(View view) {
-        int newTheme = mCurrentTheme == R.style.Theme_NoActionBar ? R.style.Theme_ThemeSecondary_NoActionBar : R.style.Theme_NoActionBar;
-        mPrefs.edit().putInt(PREF_THEME, newTheme).apply();
-
-        Intent intent = getIntent();
-        finish();
-        startActivity(intent);
-    }
+//    public void switchThemeOnClick(View view) {
+//        int newTheme = mCurrentTheme == R.style.Theme_NoActionBar ? R.style.Theme_ThemeSecondary_NoActionBar : R.style.Theme_NoActionBar;
+//        mPrefs.edit().putInt(PREF_THEME, newTheme).apply();
+//
+//        Intent intent = getIntent();
+//        finish();
+//        startActivity(intent);
+//    }
 
     @Override
     public void onMovieSelect(Movie movie) {

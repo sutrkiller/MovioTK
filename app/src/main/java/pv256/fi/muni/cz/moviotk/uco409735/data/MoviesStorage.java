@@ -1,6 +1,6 @@
 package pv256.fi.muni.cz.moviotk.uco409735.data;
 
-import android.util.Log;
+import pv256.fi.muni.cz.moviotk.uco409735.helpers.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
